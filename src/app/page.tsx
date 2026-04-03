@@ -71,12 +71,10 @@ export default function GymApp() {
           Empezar
         </button>
       </div>
-
       {/* 2. Visualización del Ejercicio (Imagen de Supabase) */}
       <div className="mb-8">
         <ExerciseImage path="abdominal.png" alt="Ilustración de crunch abdominal" />
       </div>
-
       {/* 3. Indicadores de Estado y Timer */}
       <div className="flex justify-around items-center mb-10">
         <StatCircle 
@@ -84,41 +82,36 @@ export default function GymApp() {
           label="Reps" 
           active={repsObjetivo > 0} 
         />
-        
         <RestTimer
           key={timerKey}
           initialSeconds={90}
           autoStart={timerKey > 0}
         />
-
         <StatCircle
           value={`${historial.length}/4`}
           label="Sets"
           active={historial.length >= 4}
         />
       </div>
-
       {/* 4. Referencia de peso anterior */}
       <div className="text-center mb-6">
         <p className="text-gray-500 text-[10px] uppercase tracking-widest border-b border-white/5 pb-2 inline-block px-4">
           Último peso: <span className="text-white font-bold ml-1">{pesoAnterior} kg</span>
         </p>
       </div>
-
       {/* 5. Formulario de entrada */}
       <div className="mb-6">
         <LogForm onAddSerie={manejarNuevaSerie} />
       </div>
-
       {/* 6. Acciones adicionales */}
       <button className="text-cyan-400 mb-8 text-sm font-medium hover:text-cyan-300 transition-colors w-full text-left">
         + Agregar comentario
       </button>
-
       {/* 7. Listado Histórico */}
       <div className="mt-4">
         <h2 className="text-gray-500 text-xs uppercase mb-4 tracking-tighter">Historial de hoy</h2>
-        <HistoryList series={historial} />
+        <HistoryList series={historial}
+        onDelete={cargarDatos} />
       </div>
     </div>
   );
