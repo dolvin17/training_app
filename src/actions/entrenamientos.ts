@@ -27,7 +27,7 @@ export async function saveSerie(nuevaSerie: Partial<SerieEntrenamiento>) {
   const { error } = await supabase.from("entrenamientos").insert([
     {
       ...nuevaSerie,
-      nombre_ejercicio: "Puente de glúteos",
+      nombre_ejercicio: "Crunch en esterilla",
       user_id: user.id,
     },
   ]);
