@@ -4,11 +4,12 @@ import { createClient } from "@/config/supabaseServer"; // Tu cliente de servido
 import { SerieEntrenamiento } from "@/types";
 import { revalidatePath } from "next/cache";
 
-export async function getHistorial() {
+export async function getHistorial(nombreEjercicio: string) {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("entrenamientos")
     .select("*")
+    .eq("nombre_ejercicio", nombreEjercicio)
     .order("fecha", { ascending: false });
 
   if (error) throw new Error(error.message);
@@ -24,7 +25,6 @@ export async function saveSerie(nuevaSerie: Partial<SerieEntrenamiento>) {
   const { error } = await supabase.from("entrenamientos").insert([
     {
       ...nuevaSerie,
-      nombre_ejercicio: "Crunch en esterilla",
       user_id: user.id,
     },
   ]);
