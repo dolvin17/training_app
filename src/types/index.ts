@@ -14,3 +14,9 @@ export interface StatProps {
   active?: boolean;
 }
 
+export interface TimerProps {
+  initialSeconds: number;
+  autoStart?: boolean;
+}
+
+
