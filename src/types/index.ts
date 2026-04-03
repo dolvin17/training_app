@@ -19,4 +19,9 @@ export interface TimerProps {
   autoStart?: boolean;
 }
 
+export interface HistoryListProps {
+  series: SerieEntrenamiento[];
+  onDelete: () => void;
+}
+
 
