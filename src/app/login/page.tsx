@@ -40,17 +40,10 @@ export default function AuthForm() {
     if (authError) {
       setMessage(`⚠️ ${authError.message}`);
     } else {
+      router.refresh();
       router.push("/");
     }
     setLoading(false);
-    if (authError) {
-      setMessage(`⚠️ ${authError.message}`);
-    } else {
-      // IMPORTANTE: Esto sincroniza las cookies con el servidor (proxy)
-      router.refresh();
-      // Ahora sí, entramos a la Home protegida
-      router.push("/");
-    }
   };
 
   const handleGoogleLogin = async () => {
@@ -58,7 +51,7 @@ export default function AuthForm() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${window.location.origin}/dashboard`,
+        redirectTo: `${window.location.origin}/`,
       },
     });
     if (error) {
@@ -68,33 +61,33 @@ export default function AuthForm() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[80vh] px-4">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-black px-4">
       {/* CARD PRINCIPAL */}
-      <div className="w-full max-w-sm p-8 rounded-2xl bg-[#0a0a0a] border border-white/[0.08] shadow-2xl space-y-8">
+      <div className="w-full max-w-sm p-8 rounded-3xl bg-zinc-900/40 border border-white/5 shadow-2xl space-y-8">
         {/* LOGO Y TÍTULO */}
         <header className="flex flex-col items-center space-y-4">
-          <div className="p-3 rounded-2xl bg-white/[0.03] overflow-hidden border border-white/[0.08] shadow-inner">
+          <div className="p-4 rounded-full bg-cyan-500/10 border border-cyan-500/20 shadow-inner">
             <Image
               src="/caduceo.svg"
-              height="48"
-              width="48"
-              alt="Logo Medicina"
-              className="drop-shadow-[0_0_12px_rgba(168,85,247,0.4)] scale-175  animate-in fade-in duration-1000"
+              height="40"
+              width="40"
+              alt="Logo"
+              className="drop-shadow-[0_0_8px_rgba(6,182,212,0.5)]"
             />
           </div>
           <div className="text-center space-y-1">
-            <h2 className="text-xl font-semibold tracking-tight text-white">
-              {isLogin ? "" : "Crear una cuenta"}
+            <h2 className="text-2xl font-bold tracking-tight text-white">
+              {isLogin ? "Bienvenidx" : "Crear cuenta"}
             </h2>
-            <p className="text-xs text-gray-500 font-medium uppercase tracking-widest">
-              Medic App System
+            <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-[0.2em]">
+              Training App
             </p>
           </div>
         </header>
 
         {/* FEEDBACK DE ERROR */}
         {message && (
-          <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-[11px] text-red-400 text-center animate-in fade-in zoom-in-95">
+          <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-[11px] text-red-400 text-center animate-in fade-in zoom-in-95">
             {message}
           </div>
         )}
@@ -103,7 +96,7 @@ export default function AuthForm() {
         <div className="space-y-3">
           {!isLogin && (
             <input
-              className="w-full px-4 py-3 bg-white/[0.02] border border-white/[0.1] rounded-xl text-sm text-white placeholder-gray-600 outline-none focus:border-purple-500/40 transition-all"
+              className="w-full px-4 py-3 bg-zinc-800/50 border border-white/5 rounded-xl text-sm text-white placeholder-zinc-600 outline-none focus:border-cyan-500/50 transition-all"
               type="text"
               placeholder="Nombre completo"
               value={nombre}
@@ -111,14 +104,14 @@ export default function AuthForm() {
             />
           )}
           <input
-            className="w-full px-4 py-3 bg-white/[0.02] border border-white/[0.1] rounded-xl text-sm text-white placeholder-gray-600 outline-none focus:border-purple-500/40 transition-all"
+            className="w-full px-4 py-3 bg-zinc-800/50 border border-white/5 rounded-xl text-sm text-white placeholder-zinc-600 outline-none focus:border-cyan-500/50 transition-all"
             type="email"
             placeholder="Correo electrónico"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
           <input
-            className="w-full px-4 py-3 bg-white/[0.02] border border-white/[0.1] rounded-xl text-sm text-white placeholder-gray-600 outline-none focus:border-purple-500/40 transition-all"
+            className="w-full px-4 py-3 bg-zinc-800/50 border border-white/5 rounded-xl text-sm text-white placeholder-zinc-600 outline-none focus:border-cyan-500/50 transition-all"
             type="password"
             placeholder="Contraseña"
             value={password}
@@ -128,26 +121,26 @@ export default function AuthForm() {
           <button
             onClick={handleAuth}
             disabled={loading}
-            className="w-full py-3 mt-4 bg-white text-black text-xs font-bold uppercase tracking-widest rounded-xl hover:bg-gray-200 transition-all active:scale-[0.98] disabled:opacity-50"
+            className="w-full py-3.5 mt-4 bg-cyan-500 text-black text-xs font-bold uppercase tracking-widest rounded-xl hover:bg-cyan-400 transition-all active:scale-[0.98] disabled:opacity-50 shadow-[0_0_20px_rgba(6,182,212,0.2)]"
           >
-            {loading ? "Procesando..." : isLogin ? "Entrar" : "Registrarse"}
+            {loading ? "Cargando..." : isLogin ? "Entrar" : "Registrarse"}
           </button>
         </div>
 
         {/* DIVIDER */}
         <div className="relative flex items-center py-2">
-          <div className="flex-grow border-t border-white/[0.05]"></div>
-          <span className="flex-shrink mx-4 text-[10px] text-gray-600 uppercase font-bold tracking-tighter">
-            O continuar con
+          <div className="flex-grow border-t border-white/5"></div>
+          <span className="flex-shrink mx-4 text-[9px] text-zinc-600 uppercase font-black tracking-widest">
+            O
           </span>
-          <div className="flex-grow border-t border-white/[0.05]"></div>
+          <div className="flex-grow border-t border-white/5"></div>
         </div>
 
         {/* GOOGLE LOGIN */}
         <button
           onClick={handleGoogleLogin}
           disabled={loading}
-          className="w-full flex items-center justify-center gap-3 py-3 bg-white/[0.03] border border-white/[0.1] rounded-xl text-xs font-medium text-white hover:bg-white/[0.06] transition-all"
+          className="w-full flex items-center justify-center gap-3 py-3 bg-zinc-800/30 border border-white/5 rounded-xl text-xs font-bold text-white hover:bg-zinc-800/60 transition-all uppercase tracking-widest"
         >
           <svg className="w-4 h-4" viewBox="0 0 24 24">
             <path
@@ -171,13 +164,13 @@ export default function AuthForm() {
         </button>
 
         {/* TOGGLE MODO */}
-        <p className="text-center text-[11px] text-gray-500">
+        <p className="text-center text-[11px] text-zinc-500">
           {isLogin ? "¿No tienes cuenta?" : "¿Ya eres miembro?"}{" "}
           <button
             onClick={() => setIsLogin(!isLogin)}
-            className="text-purple-400 hover:text-purple-300 font-semibold transition-colors underline-offset-4 hover:underline"
+            className="text-cyan-500 hover:text-cyan-400 font-bold transition-colors"
           >
-            {isLogin ? "Crea una ahora" : "Inicia sesión aquí"}
+            {isLogin ? "Crea una ahora" : "Inicia sesión"}
           </button>
         </p>
       </div>

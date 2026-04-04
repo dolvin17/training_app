@@ -83,9 +83,9 @@ export default function GymApp({
         >
           ←
         </span>
-      <h1 className="text-xl font-bold">{nombreParaMostrar}</h1>
+      <h1 className="text-xl font-bold text-center">{nombreParaMostrar}</h1>
         <button className="text-cyan-500 font-medium hover:text-cyan-400">
-          Empezar
+          ¡Hola!
         </button>
       </div>
 
