@@ -31,7 +31,7 @@ export default function LogForm({ onAddSerie }: LogFormProps) {
           <input type="number" value={reps} onChange={(e) => setReps(Number(e.target.value))} className="bg-transparent w-full text-center text-2xl font-bold focus:outline-none" />
         </div>
 
-        <button onClick={handleSubmit} className="bg-cyan-600 px-8 rounded-xl text-4xl font-light">+</button>
+        <button onClick={handleSubmit} className="bg-green-600 px-8 rounded-xl text-4xl font-light">+</button>
       </div>
 
       {/* Input de Comentario */}
@@ -40,7 +40,7 @@ export default function LogForm({ onAddSerie }: LogFormProps) {
         placeholder="Agregar comentario a esta serie..."
         value={comentario}
         onChange={(e) => setComentario(e.target.value)}
-        className="w-full bg-transparent border-b border-gray-800 py-2 text-sm text-cyan-400 focus:outline-none placeholder:text-gray-600"
+        className="w-full bg-transparent border-b border-gray-800 py-2 text-sm text-green-400 focus:outline-none placeholder:text-gray-600"
       />
     </div>
   )

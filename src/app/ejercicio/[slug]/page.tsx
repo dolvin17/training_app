@@ -78,13 +78,13 @@ export default function GymApp({
       {/* 1. Cabecera */}
       <div className="flex justify-between items-center mb-6">
         <span
-          className="text-cyan-500 text-2xl cursor-pointer hover:opacity-70"
+          className="text-green-500 text-2xl cursor-pointer hover:opacity-70"
           onClick={() => router.back()}
         >
           ←
         </span>
       <h1 className="text-xl font-bold text-center">{nombreParaMostrar}</h1>
-        <button className="text-cyan-500 font-medium hover:text-cyan-400">
+        <button className="text-green-500 font-medium hover:text-green-400">
           ¡Hola!
         </button>
       </div>
@@ -124,7 +124,7 @@ export default function GymApp({
         <LogForm onAddSerie={manejarNuevaSerie} />
       </div>
       {/* 6. Acciones adicionales */}
-      <button className="text-cyan-400 mb-8 text-sm font-medium hover:text-cyan-300 transition-colors w-full text-left">
+      <button className="text-green-400 mb-8 text-sm font-medium hover:text-green-300 transition-colors w-full text-left">
         + Agregar comentario
       </button>
       {/* 7. Listado Histórico */}

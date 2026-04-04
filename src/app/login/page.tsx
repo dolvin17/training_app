@@ -66,7 +66,7 @@ export default function AuthForm() {
       <div className="w-full max-w-sm p-8 rounded-3xl bg-zinc-900/40 border border-white/5 shadow-2xl space-y-8">
         {/* LOGO Y TÍTULO */}
         <header className="flex flex-col items-center space-y-4">
-          <div className="p-4 rounded-full bg-cyan-500/10 border border-cyan-500/20 shadow-inner">
+          <div className="p-4 rounded-full bg-green-500/10 border border-green-500/20 shadow-inner">
             <Image
               src="/caduceo.svg"
               height="40"
@@ -96,7 +96,7 @@ export default function AuthForm() {
         <div className="space-y-3">
           {!isLogin && (
             <input
-              className="w-full px-4 py-3 bg-zinc-800/50 border border-white/5 rounded-xl text-sm text-white placeholder-zinc-600 outline-none focus:border-cyan-500/50 transition-all"
+              className="w-full px-4 py-3 bg-zinc-800/50 border border-white/5 rounded-xl text-sm text-white placeholder-zinc-600 outline-none focus:border-green-500/50 transition-all"
               type="text"
               placeholder="Nombre completo"
               value={nombre}
@@ -104,14 +104,14 @@ export default function AuthForm() {
             />
           )}
           <input
-            className="w-full px-4 py-3 bg-zinc-800/50 border border-white/5 rounded-xl text-sm text-white placeholder-zinc-600 outline-none focus:border-cyan-500/50 transition-all"
+            className="w-full px-4 py-3 bg-zinc-800/50 border border-white/5 rounded-xl text-sm text-white placeholder-zinc-600 outline-none focus:border-green-500/50 transition-all"
             type="email"
             placeholder="Correo electrónico"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
           <input
-            className="w-full px-4 py-3 bg-zinc-800/50 border border-white/5 rounded-xl text-sm text-white placeholder-zinc-600 outline-none focus:border-cyan-500/50 transition-all"
+            className="w-full px-4 py-3 bg-zinc-800/50 border border-white/5 rounded-xl text-sm text-white placeholder-zinc-600 outline-none focus:border-green-500/50 transition-all"
             type="password"
             placeholder="Contraseña"
             value={password}
@@ -121,7 +121,7 @@ export default function AuthForm() {
           <button
             onClick={handleAuth}
             disabled={loading}
-            className="w-full py-3.5 mt-4 bg-cyan-500 text-black text-xs font-bold uppercase tracking-widest rounded-xl hover:bg-cyan-400 transition-all active:scale-[0.98] disabled:opacity-50 shadow-[0_0_20px_rgba(6,182,212,0.2)]"
+            className="w-full py-3.5 mt-4 bg-green-500 text-black text-xs font-bold uppercase tracking-widest rounded-xl hover:bg-green-400 transition-all active:scale-[0.98] disabled:opacity-50 shadow-[0_0_20px_rgba(6,182,212,0.2)]"
           >
             {loading ? "Cargando..." : isLogin ? "Entrar" : "Registrarse"}
           </button>
@@ -168,7 +168,7 @@ export default function AuthForm() {
           {isLogin ? "¿No tienes cuenta?" : "¿Ya eres miembro?"}{" "}
           <button
             onClick={() => setIsLogin(!isLogin)}
-            className="text-cyan-500 hover:text-cyan-400 font-bold transition-colors"
+            className="text-green-500 hover:text-green-400 font-bold transition-colors"
           >
             {isLogin ? "Crea una ahora" : "Inicia sesión"}
           </button>

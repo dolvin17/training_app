@@ -39,7 +39,7 @@ export default function RestTimer({ initialSeconds, autoStart = false }: TimerPr
       <div
         className={`w-20 h-20 rounded-full border-2 flex flex-col items-center justify-center ${
           isActive
-            ? "border-cyan-400 shadow-[0_0_15px_rgba(34,211,238,0.3)]"
+            ? "border-green-400 shadow-[0_0_15px_rgba(34,211,238,0.3)]"
             : "border-gray-700"
         }`}
       >

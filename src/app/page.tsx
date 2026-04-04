@@ -11,7 +11,7 @@ export const EJERCICIOS_CONFIG = [
 ];
 export default function MenuPrincipal() {
   return (
-    <div className="min-h-screen bg-black text-white p-6 max-w-md mx-auto">
+    <div className="min-h-screen bg-black text-white p-4 sm:p-6 w-full max-w-full md:max-w-2xl lg:max-w-4xl mx-auto">
       <header className="mb-10 mt-4">
         <h1 className="text-3xl font-bold tracking-tight mb-2">
           Entrenamiento
@@ -25,10 +25,10 @@ export default function MenuPrincipal() {
           <Link
             key={ex.slug}
             href={`/ejercicio/${ex.slug}`}
-            className="group bg-zinc-900/40 border border-white/5 p-5 rounded-2xl flex items-center justify-between hover:border-cyan-500/50 hover:bg-zinc-900/60 transition-all active:scale-[0.98]"
+            className="group bg-zinc-900/40 border border-white/5 p-5 rounded-2xl flex items-center justify-between hover:border-green-500/50 hover:bg-zinc-900/60 transition-all active:scale-[0.98]"
           >
             <div className="flex items-center gap-4">
-              <div className="w-10 h-10 rounded-full bg-cyan-500/10 flex items-center justify-center text-cyan-500 group-hover:bg-cyan-500 group-hover:text-black transition-colors">
+              <div className="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center text-green-500 group-hover:bg-green-500 group-hover:text-black transition-colors">
                 <FiActivity size={20} />
               </div>
               <span className="text-lg font-semibold tracking-tight">
@@ -36,7 +36,7 @@ export default function MenuPrincipal() {
               </span>
             </div>
             <FiChevronRight
-              className="text-zinc-700 group-hover:text-cyan-500 transition-colors"
+              className="text-zinc-700 group-hover:text-green-500 transition-colors"
               size={20}
             />
           </Link>

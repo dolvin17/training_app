@@ -49,7 +49,7 @@ export default function HistoryList({ series, onDelete }: HistoryListProps) {
           {grupos[fecha].map((serie, index) => (
             <div key={serie.id} className="p-4 flex justify-between items-center group">
               <div className="flex items-center gap-4">
-                <span className="text-cyan-500/50 font-mono text-[10px] w-4">
+                <span className="text-green-500/50 font-mono text-[10px] w-4">
                   #{grupos[fecha].length - index}
                 </span>
                 <div>
