@@ -49,3 +49,13 @@ export const deleteSerie = async (id: string) => {
   
   revalidatePath("/"); // Para que Next.js sepa que los datos cambiaron
 };
+
+export async function getInfoEjercicio(slug: string) {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("ejercicios")
+    .select("*")
+    .eq("slug", slug)
+    .single();
+  return data;
+}

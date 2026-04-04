@@ -1,13 +1,8 @@
 // src/components/ExerciseImage.tsx
 import Image from "next/image";
+import { ImageProps }  from "@/types"
 
-interface Props {
-  path: string; // Ejemplo: "ejercicios/glute-bridge.png"
-  alt: string;
-  className?: string;
-}
-
-export default function ExerciseImage({ path, alt, className="" }: Props) {
+export default function ExerciseImage({ path, alt, className="" }: ImageProps) {
   // Construimos la URL pública de tu bucket de Supabase
   // Reemplaza 'TU_PROYECTO' y 'nombre_del_bucket' por los tuyos
   const publicUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/ejercicios/${path}`;

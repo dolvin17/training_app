@@ -24,4 +24,10 @@ export interface HistoryListProps {
   onDelete: () => void;
 }
 
+export interface ImageProps {
+  path: string;
+  alt: string;
+  className?: string;
+}
+
 
