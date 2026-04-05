@@ -132,9 +132,7 @@ export default function GymApp({
       {/* 5. Formulario y Comentarios */}
       <div className="space-y-6 mb-12">
         <LogForm onAddSerie={manejarNuevaSerie} />
-        <button className="text-green-500/60 text-[10px] font-bold uppercase tracking-widest hover:text-green-500 transition-colors">
-          + Añadir nota técnica
-        </button>
+
       </div>
       {/* 6. Historial de hoy */}
       <div className="mt-4">
