@@ -46,19 +46,20 @@ export default function AuthForm() {
     setLoading(false);
   };
 
-  const handleGoogleLogin = async () => {
-    setLoading(true);
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: `${window.location.origin}/`,
-      },
-    });
-    if (error) {
-      setMessage(`❌ ${error.message}`);
-      setLoading(false);
-    }
-  };
+ const handleGoogleLogin = async () => {
+  setLoading(true);
+  const { error } = await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: {
+      redirectTo: `${window.location.origin}/`, 
+    },
+  });
+  
+  if (error) {
+    setMessage(`❌ ${error.message}`);
+    setLoading(false);
+  }
+};
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-black px-4">

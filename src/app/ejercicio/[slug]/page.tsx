@@ -101,12 +101,8 @@ export default function GymApp({
           <FiInfo size={14} /> Info
         </button>
       </div>
-
       {/* 2. Imagen del Ejercicio */}
-      <div className="mb-10">
-        <ExerciseImage path={`${slug}.png`} alt={info.nombre} />
-      </div>
-
+      <ExerciseImage path={info.imagen_url} alt={info.nombre} />
       {/* 3. Indicadores (Reps, Timer, Sets) */}
       <div className="flex justify-around items-center mb-12">
         <StatCircle
@@ -133,7 +129,6 @@ export default function GymApp({
           <span className="text-white font-black ml-1">{pesoAnterior} kg</span>
         </p>
       </div>
-
       {/* 5. Formulario y Comentarios */}
       <div className="space-y-6 mb-12">
         <LogForm onAddSerie={manejarNuevaSerie} />
@@ -141,7 +136,6 @@ export default function GymApp({
           + Añadir nota técnica
         </button>
       </div>
-
       {/* 6. Historial de hoy */}
       <div className="mt-4">
         <h2 className="text-zinc-600 text-[10px] font-black uppercase mb-6 tracking-[0.2em]">
@@ -149,7 +143,6 @@ export default function GymApp({
         </h2>
         <HistoryList series={historial} onDelete={cargarDatos} />
       </div>
-
       {/* 7. POPUP DE TÉCNICA (Formato Profesional) */}
       {showPopup && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-xl animate-in fade-in duration-300">
@@ -160,12 +153,11 @@ export default function GymApp({
             >
               Cerrar
             </button>
-
             <h2 className="text-2xl font-bold mb-2">{info.nombre}</h2>
             <p className="text-zinc-500 text-sm mb-8 leading-relaxed">
               {info.descripcion || "Sin descripción disponible."}
             </p>
-            <div className="my-6">
+            <div className="mb-10">
               <ExerciseImage path={info.imagen_url} alt={info.nombre} />
             </div>
             {/* SECCIÓN INSTRUCCIONES */}
@@ -189,7 +181,6 @@ export default function GymApp({
                 ))}
               </div>
             </section>
-
             {/* SECCIÓN AVISO */}
             <section className="p-6 bg-red-500/5 border border-red-500/10 rounded-[2rem]">
               <div className="flex items-center gap-2 mb-4">
