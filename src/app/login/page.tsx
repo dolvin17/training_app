@@ -78,7 +78,8 @@ export default function AuthForm() {
               height="60"
               width="60"
               alt="Logo"
-              className="drop-shadow-[0_0_8px_rgba(6,182,212,0.5)]"
+              priority // <--- Añade esto aquí
+              className="drop-shadow-[0_0_8px_rgba(34,197,94,0.5)]"
             />
           </div>
           <div className="text-center space-y-1">
@@ -133,22 +134,28 @@ export default function AuthForm() {
           </button>
         </div>
 
-        {/* DIVIDER */}
-        <div className="relative flex items-center py-2">
-          <div className="flex-grow border-t border-white/5"></div>
-          <span className="flex-shrink mx-4 text-[9px] text-zinc-600 uppercase font-black tracking-widest">
+        {/* DIVIDER MINIMALISTA */}
+        <div className="relative flex items-center py-2 mb-6">
+          <div className="flex-grow border-t border-white/[0.03]"></div>
+          <span className="flex-shrink mx-4 text-[9px] text-zinc-700 uppercase font-black tracking-[0.3em]">
             O
           </span>
-          <div className="flex-grow border-t border-white/5"></div>
+          <div className="flex-grow border-t border-white/[0.03]"></div>
         </div>
 
-        <button
-          onClick={handleMagicLink}
-          disabled={loading}
-          className="w-full flex items-center justify-center gap-3 py-3 bg-zinc-800/30 border border-white/5 rounded-xl text-xs font-bold text-white hover:bg-zinc-800/60 transition-all uppercase tracking-widest"
-        >
-          {loading ? "Enviando..." : "Entrar con Magic Link"}
-        </button>
+        {/* ACCESO POR MAGIC LINK (SUTIL Y ELEGANTE) */}
+        <div className="text-center mt-2">
+          <p className="text-[11px] text-zinc-500">
+            ¿Prefieres sin contraseña?{" "}
+            <button
+              onClick={handleMagicLink}
+              disabled={loading}
+              className="text-green-500 hover:text-green-400 font-bold transition-colors active:scale-[0.98] disabled:opacity-50"
+            >
+              Enviarme enlace de acceso
+            </button>
+          </p>
+        </div>
 
         {/* TOGGLE MODO */}
         <p className="text-center text-[11px] text-zinc-500">
