@@ -86,7 +86,7 @@ export default function Dashboard() {
               </span>
             )}
           </div>
-          <span className="mt-2 text-green-500 text-[7px] font-black uppercase tracking-[0.2em]">
+          <span className="mt-2 text-orange-500 text-[7px] font-black uppercase tracking-[0.2em]">
             Resumen de series hoy
           </span>
         </div>
@@ -133,7 +133,7 @@ export default function Dashboard() {
 
                   {/* INDICADOR FIJO PERO SUTIL PARA MÓVIL */}
                   <FiChevronRight
-                    className="text-green-800" // Color muy oscuro para que no distraiga
+                    className="text-orange-800" // Color muy oscuro para que no distraiga
                     size={18}
                   />
                 </div>

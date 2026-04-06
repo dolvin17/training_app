@@ -123,7 +123,7 @@ export default function MenuPrincipal() {
               className="group bg-zinc-900/30 border border-white/5 p-5 rounded-[2.5rem] flex items-center justify-between hover:bg-zinc-900/60 hover:border-green-500/30 transition-all active:scale-[0.98]"
             >
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-green-500/10 flex items-center justify-center text-green-500 group-hover:bg-green-500 group-hover:text-black transition-all duration-300">
+                <div className="w-12 h-12 rounded-full bg-orange-500/10 flex items-center justify-center text-orange-500 group-hover:bg-orange-500 group-hover:text-black transition-all duration-300">
                   <FiActivity size={20} />
                 </div>
                 <div>
@@ -136,7 +136,7 @@ export default function MenuPrincipal() {
                 </div>
               </div>
               <FiChevronRight
-                className="text-zinc-700 group-hover:text-green-500 transition-colors"
+                className="text-orange-700 group-hover:text-green-500 transition-colors"
                 size={24}
               />
             </Link>

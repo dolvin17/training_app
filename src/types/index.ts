@@ -31,3 +31,10 @@ export interface ImageProps {
 }
 
 
+export interface InteractiveStatProps {
+  value: string | number;
+  label: string;
+  active?: boolean;
+  activeColor?: 'green' | 'orange';
+  onClick?: () => void;
+}

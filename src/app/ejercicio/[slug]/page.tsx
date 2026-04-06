@@ -16,7 +16,6 @@ import RestTimer from "@/components/RestTimer";
 import { FiInfo, FiChevronLeft } from "react-icons/fi";
 import { use } from "react";
 
-
 export default function GymApp({
   params,
 }: {
@@ -27,20 +26,18 @@ export default function GymApp({
   const [timerKey, setTimerKey] = useState<number>(0);
   const [info, setInfo] = useState<any>(null); // Datos de la tabla 'ejercicios'
   const [showPopup, setShowPopup] = useState(false);
-const [user, setUser] = useState<any>(null);
-  const router = useRouter();
+  const [targetSets, setTargetSets] = useState(4);
+  const [targetReps, setTargetReps] = useState(12);
 
-  useEffect(() => {
-    const checkUser = async () => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      if (!session) {
-        router.push("/login");
-      }
-    };
-    checkUser();
-  }, [router]);
+  const ajustarReps = () => {
+    // Ciclo de 5 a 20 reps (por ejemplo)
+    setTargetReps((prev) => (prev >= 20 ? 5 : prev + 1));
+  };
+  const ajustarSets = () => {
+    setTargetSets((prev) => (prev >= 6 ? 1 : prev + 1));
+  };
+  const [user, setUser] = useState<any>(null);
+  const router = useRouter();
 
   // 1. Cargar la "Ficha Técnica" del ejercicio (Tabla: ejercicios)
   useEffect(() => {
@@ -65,16 +62,18 @@ const [user, setUser] = useState<any>(null);
   }, [info]);
 
   useEffect(() => {
-  const checkUser = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
-      router.push("/login");
-    } else {
-      setUser(session.user); // Guardamos el usuario para la cabecera
-    }
-  };
-  checkUser();
-}, [router]);
+    const checkUser = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (!session) {
+        router.push("/login");
+      } else {
+        setUser(session.user); // Guardamos el usuario para la cabecera
+      }
+    };
+    checkUser();
+  }, [router]);
 
   const manejarNuevaSerie = async (nuevaSerie: Partial<SerieEntrenamiento>) => {
     try {
@@ -85,6 +84,11 @@ const [user, setUser] = useState<any>(null);
       alert("Error al guardar");
     }
   };
+  useEffect(() => {
+    if (historial.length > 0) {
+      setTargetReps(historial[0].reps);
+    }
+  }, [historial]);
   const ultimaSerie = historial[0]; // El historial suele venir ordenado por fecha desc
   const repsObjetivo = ultimaSerie?.reps || 0;
   const pesoAnterior = ultimaSerie?.peso || 0;
@@ -99,62 +103,81 @@ const [user, setUser] = useState<any>(null);
   return (
     <div className="min-h-screen bg-black text-white p-4 sm:p-6 w-full max-w-full md:max-w-2xl mx-auto">
       {/* 1. Cabecera */}
-      <div className="flex justify-between items-center mb-8">
-        <FiChevronLeft
-          className="text-zinc-500 text-2xl cursor-pointer hover:text-green-500 transition-colors"
-          onClick={() => router.back()}
-        />
-      <h1 className="text-sm font-black text-center uppercase tracking-[0.2em] flex-1 truncate">
-    {info.nombre}
-  </h1>
-        <button
-      onClick={() => setShowPopup(true)}
-      className="text-green-500 p-2 cursor-pointer rounded-full bg-green-500/10 border border-green-500/20 active:scale-90 transition-transform"
-    >
-      <FiInfo size={16} />
-    </button>
+      {/* 1. Cabecera (Sustituye solo este div) */}
+      <div className="grid grid-cols-3 items-center mb-8">
+        {/* IZQUIERDA: Botón Volver */}
+        <div className="flex justify-start">
+          <FiChevronLeft
+            className="text-zinc-500 text-2xl cursor-pointer hover:text-green-500 transition-colors"
+            onClick={() => router.back()}
+          />
+        </div>
 
-    {/* MINIATURA DEL USUARIO (AVATAR) */}
-<div 
-  onClick={() => router.push("/dashboard")}
-  className="w-10 h-10 rounded-full bg-zinc-900 border border-white/10 p-0.5 cursor-pointer active:scale-90 transition-all overflow-hidden shadow-lg shadow-green-500/5 flex-shrink-0"
->
-  {user?.user_metadata?.avatar_url ? (
-    <img 
-      src={user.user_metadata.avatar_url} 
-      alt="Dashboard" 
-      className="w-full h-full rounded-full object-cover"
-    />
-  ) : (
-    <div className="w-full h-full rounded-full bg-zinc-800 flex items-center justify-center">
-      <span className="text-[10px] font-black text-zinc-500 uppercase">
-        {user?.email?.[0]}
-      </span>
-    </div>
-  )}
-</div>
+        {/* CENTRO: Título del Ejercicio */}
+        <div className="flex justify-center">
+          <h1 className="text-sm font-black text-center uppercase tracking-[0.2em] whitespace-nowrap">
+            {info.nombre}
+          </h1>
+        </div>
+
+        {/* DERECHA: Info + Avatar (Aquí es donde añadimos el gap para que no estén juntos) */}
+        <div className="flex justify-end items-center gap-3">
+          <button
+            onClick={() => setShowPopup(true)}
+            className="text-green-500 p-2 cursor-pointer rounded-full bg-green-500/10 border border-green-500/20 active:scale-90 transition-transform flex items-center justify-center"
+          >
+            <FiInfo size={16} />
+          </button>
+
+          <div
+            onClick={() => router.push("/dashboard")}
+            className="w-10 h-10 rounded-full bg-zinc-900 border border-white/10 p-0.5 cursor-pointer active:scale-90 transition-all overflow-hidden flex-shrink-0"
+          >
+            {user?.user_metadata?.avatar_url ? (
+              <img
+                src={user.user_metadata.avatar_url}
+                alt="Dashboard"
+                className="w-full h-full rounded-full object-cover"
+              />
+            ) : (
+              <div className="w-full h-full rounded-full bg-zinc-800 flex items-center justify-center">
+                <span className="text-[10px] font-black text-zinc-500 uppercase">
+                  {user?.email?.[0]}
+                </span>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
       {/* 2. Imagen del Ejercicio */}
       <ExerciseImage path={info.imagen_url} alt={info.nombre} />
       {/* 3. Indicadores (Reps, Timer, Sets) */}
-      <div className="flex justify-around items-center mb-12">
-        <StatCircle
-          value={repsObjetivo > 0 ? repsObjetivo : "--"}
-          label="Reps"
-          active={repsObjetivo > 0}
-        />
-        <RestTimer
-          key={timerKey}
-          initialSeconds={90}
-          autoStart={timerKey > 0}
-        />
-        <StatCircle
-          value={`${historial.length}/4`}
-          label="Sets"
-          active={historial.length >= 4}
-        />
-      </div>
+     <div className="flex justify-around items-center mb-12">
+  <StatCircle
+    value={targetReps}
+    label="Reps"
+    // NARANJA si aún no hemos alcanzado el objetivo de reps en la última serie
+    activeColor={ultimaSerie?.reps < targetReps ? 'orange' : 'green'} 
+    active={ultimaSerie?.reps > 0} // Se enciende si hay al menos una serie
+    onClick={ajustarReps}
+  />
+  
+  <RestTimer
+    key={timerKey}
+    initialSeconds={90}
+    autoStart={timerKey > 0}
+    // El check flotante será siempre VERDE al finalizar
+  />
 
+  <StatCircle
+    value={`${historial.length}/${targetSets}`}
+    label="Series"
+    // NARANJA mientras estamos en proceso, VERDE al terminar todas
+    activeColor={historial.length < targetSets ? 'orange' : 'green'}
+    active={historial.length > 0}
+    onClick={ajustarSets}
+  />
+</div>
       {/* 4. Referencia de peso anterior */}
       <div className="text-center mb-8">
         <p className="text-zinc-500 text-[10px] uppercase tracking-[0.2em] border-b border-white/5 pb-3 inline-block px-6">
@@ -163,10 +186,15 @@ const [user, setUser] = useState<any>(null);
         </p>
       </div>
       {/* 5. Formulario y Comentarios */}
-      <div className="space-y-6 mb-12">
-        <LogForm onAddSerie={manejarNuevaSerie} />
-
-      </div>
+  {/* 5. Formulario con el nuevo botón ancho */}
+<div className="space-y-6 mb-12">
+  <LogForm 
+    onAddSerie={manejarNuevaSerie} 
+    defaultReps={targetReps} 
+    ultimoPeso={pesoAnterior}
+    // Ya no pasamos el botón "+" aquí dentro
+  />
+</div>
       {/* 6. Historial de hoy */}
       <div className="mt-4">
         <h2 className="text-zinc-600 text-[10px] font-black uppercase mb-6 tracking-[0.2em]">
@@ -232,7 +260,6 @@ const [user, setUser] = useState<any>(null);
                 ))}
               </ul>
             </section>
-
             <button
               onClick={() => setShowPopup(false)}
               className="w-full mt-10 py-4 bg-white text-black text-[10px] font-black uppercase tracking-[0.2em] rounded-2xl active:scale-[0.98] transition-transform"
