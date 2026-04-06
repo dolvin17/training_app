@@ -43,53 +43,57 @@ export default function Dashboard() {
       <div className="grid grid-cols-2 gap-4 mb-10">
         {/* TARJETA DE RACHA */}
         {/* TARJETA DE RACHA (STREAK) */}
-        <div className="bg-green-900/40 border border-white/5 p-6 rounded-[2.5rem] text-center relative overflow-hidden flex flex-col justify-center min-h-[160px]">
-          <div className="absolute -top-10 -right-10 w-20 h-20 bg-orange-500/10 blur-[30px] rounded-full" />
-
-          <div>
-            <FiZap
-              className={`mx-auto mb-2 ${
-                stats.racha > 0 ? "text-orange-500" : "text-green-700"
-              }`}
-              size={24}
-            />
-            <span className="block text-4xl font-black mb-1">
-              {stats.racha}
-            </span>
-            <span className="text-green-500 text-[8px] font-black uppercase tracking-[0.2em]">
-              Días Racha
-            </span>
-          </div>
-        </div>
+       <div className="relative group bg-gradient-to-b from-zinc-800 to-black border border-orange-500/30 p-6 rounded-[2.5rem] text-center overflow-hidden flex flex-col justify-center min-h-[160px] shadow-[inset_0_1px_2px_rgba(255,255,255,0.1)]">
+  {/* Luz naranja desde abajo */}
+  <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom,rgba(249,115,22,0.15)_0%,transparent_70%)]" />
+  
+  <div className="relative z-10">
+    <FiZap
+      className={`mx-auto mb-2 ${stats.racha > 0 ? "text-orange-500 animate-pulse" : "text-zinc-600"}`}
+      size={24}
+    />
+    <span className="block text-4xl font-black text-white tracking-tighter">
+      {stats.racha}
+    </span>
+    <span className="text-orange-500 text-[8px] font-black uppercase tracking-[0.2em]">
+      Días Racha
+    </span>
+  </div>
+</div>
 
         {/* TARJETA SESIONES TOTALES */}
         {/* TARJETA SERIES HOY POR GRUPO */}
-        <div className="bg-green-900/40 border border-white/5 p-6 rounded-[2.5rem] relative overflow-hidden flex flex-col justify-center">
-          <div className="absolute -top-10 -right-10 w-20 h-20 bg-green-500/10 blur-[30px] rounded-full" />
-          <FiTrendingUp className="mb-3 text-green-500" size={20} />
+        <div className="relative group bg-gradient-to-b from-zinc-800 to-black border border-green-500/30 p-6 rounded-[2.5rem] overflow-hidden flex flex-col justify-center shadow-[inset_0_1px_2px_rgba(255,255,255,0.1)]">
+  
+  {/* Luz radial verde desde la esquina inferior (Efecto consola) */}
+  <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,rgba(34,197,94,0.15)_0%,transparent_70%)] pointer-events-none" />
 
-          <div className="space-y-1">
-            {Object.keys(stats?.seriesHoy || {}).length > 0 ? (
-              Object.entries(stats.seriesHoy).map(([grupo, total]) => (
-                <div key={grupo} className="flex justify-between items-center">
-                  <span className="text-[10px] font-bold text-green-400 uppercase tracking-wider">
-                    {grupo}
-                  </span>
-                  <span className="text-lg font-black text-white">
-                    {total as number}
-                  </span>
-                </div>
-              ))
-            ) : (
-              <span className="text-[10px] font-black text-green-600 uppercase">
-                0 Series hoy
-              </span>
-            )}
-          </div>
-          <span className="mt-2 text-orange-500 text-[7px] font-black uppercase tracking-[0.2em]">
-            Resumen de series hoy
+  {/* Icono con brillo sutil */}
+  <FiTrendingUp className="relative z-10 mb-3 text-green-500 drop-shadow-[0_0_8px_rgba(34,197,94,0.4)]" size={20} />
+
+  <div className="relative z-10 space-y-2">
+    {Object.keys(stats?.seriesHoy || {}).length > 0 ? (
+      Object.entries(stats.seriesHoy).map(([grupo, total]) => (
+        <div key={grupo} className="flex justify-between items-end border-b border-white/5 pb-1">
+          <span className="text-[10px] font-bold text-green-400 uppercase tracking-wider">
+            {grupo}
+          </span>
+          <span className="text-xl font-black text-white leading-none">
+            {total as number}
           </span>
         </div>
+      ))
+    ) : (
+      <span className="text-[10px] font-black text-green-600 uppercase">
+        0 Series hoy
+      </span>
+    )}
+  </div>
+
+  <span className="relative z-10 mt-3 text-orange-500 text-[7px] font-black uppercase tracking-[0.2em]">
+    Resumen de series hoy
+  </span>
+</div>
       </div>
 
       {/* LISTADO DE VOLUMEN POR EJERCICIO */}
@@ -150,12 +154,33 @@ export default function Dashboard() {
       </section>
 
       {/* BOTÓN VOLVER A ENTRENAR */}
-      <button
-        onClick={() => router.push("/")}
-        className="w-full mt-12 py-5 bg-white text-black rounded-[2rem] font-black uppercase text-[10px] tracking-[0.2em] hover:bg-green-500 transition-colors active:scale-[0.98]"
-      >
-        Ir a entrenar
-      </button>
+     <button
+  onClick={() => router.push("/")}
+  className="relative w-full mt-12 group active:scale-[0.97] transition-all duration-300"
+>
+  {/* 1. Resplandor exterior (Glow naranja potente) */}
+  <div className="absolute -inset-1 bg-orange-500/25 rounded-[2rem] blur-xl opacity-80 group-hover:opacity-100 transition-opacity duration-500"></div>
+
+  {/* 2. Cuerpo del botón con degradado y relieve naranja */}
+  <div className="relative w-full py-6 bg-gradient-to-b from-zinc-800 to-black rounded-[2rem] border border-orange-500/40 flex flex-col items-center justify-center overflow-hidden shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)] group-hover:border-orange-400 transition-colors">
+    
+    {/* Degradado naranja interno (Luz desde abajo) */}
+    <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom,rgba(249,115,22,0.2)_0%,transparent_70%)]"></div>
+    
+    {/* Texto con el LED naranja parpadeante */}
+    <div className="relative flex items-center gap-3">
+      <div className="w-1.5 h-1.5 rounded-full bg-orange-500 shadow-[0_0_10px_rgba(249,115,22,1)] animate-pulse" />
+      <span className="text-white text-[11px] font-black uppercase tracking-[0.3em]">
+        Iniciar Entrenamiento
+      </span>
+    </div>
+
+    {/* Subtexto sutil naranja */}
+    <span className="relative text-[7px] text-orange-500/60 font-bold uppercase tracking-[0.1em] mt-1">
+      Volver a la sesión activa
+    </span>
+  </div>
+</button>
     </div>
   );
 }

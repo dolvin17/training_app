@@ -97,8 +97,8 @@ export default function UserProfile() {
     }
   };
 
-  return (
-    <div className="flex flex-col items-center mb-10 animate-in fade-in zoom-in duration-700">
+return (
+    <div className="w-full bg-gradient-to-b from-zinc-900/50 to-black border border-white/5 rounded-[2.5rem] p-6 mb-10 animate-in fade-in slide-in-from-top-4 duration-700 shadow-2xl">
       {/* INPUT OCULTO PARA EL SELECTOR DE ARCHIVOS */}
       <input
         type="file"
@@ -108,114 +108,115 @@ export default function UserProfile() {
         className="hidden"
       />
 
-      {/* 1. SECCIÓN DE AVATAR (MÓVIL READY) */}
-      <div className="relative mb-4">
-        <div
-          className="w-28 h-28 rounded-full bg-zinc-900 border border-white/10 p-1 relative overflow-hidden shadow-2xl shadow-green-500/5 active:scale-95 transition-transform"
-          onClick={() => !uploading && fileInputRef.current?.click()}
-        >
-          {avatarUrl ? (
-            <img
-              src={avatarUrl}
-              alt="Perfil"
-              className="w-full h-full rounded-full object-cover"
-            />
+      <div className="flex items-center justify-between gap-6">
+        {/* 1. IZQUIERDA: INFORMACIÓN Y EDICIÓN */}
+        <div className="flex-1 flex flex-col items-start min-h-[100px] justify-center">
+          <h2 className="text-2xl font-black tracking-tight capitalize text-white mb-2">
+            {nombre}
+          </h2>
+
+          {!isEditingEmail ? (
+            /* MODO VISTA: PÍLDORA FANCY */
+            <button
+              onClick={() => {
+                setIsEditingEmail(true);
+                setNewEmail(user.email);
+              }}
+              className="flex items-center gap-3 px-4 py-2 rounded-xl bg-black border border-white/5 active:scale-95 transition-all group"
+            >
+              <p className="text-zinc-500 group-hover:text-zinc-300 text-[10px] font-black uppercase tracking-[0.15em] transition-colors truncate max-w-[150px] sm:max-w-none">
+                {user.email}
+              </p>
+              <FiEdit2 className="text-green-500 opacity-60 group-hover:opacity-100" size={10} />
+            </button>
           ) : (
-            <div className="w-full h-full rounded-full bg-zinc-800 flex items-center justify-center">
-              <span className="text-3xl font-black text-zinc-600 uppercase">
-                {user.email?.[0]}
-              </span>
+            /* MODO EDICIÓN: INPUTS ESTILO CONSOLA */
+            <div className="w-full animate-in fade-in zoom-in duration-300">
+              <input
+                type="email"
+                value={newEmail}
+                onChange={(e) => setNewEmail(e.target.value)}
+                className="w-full bg-black border border-green-500/30 rounded-xl px-4 py-2 text-sm text-white font-bold focus:outline-none focus:border-green-500 transition-all mb-2"
+                placeholder="nuevo@email.com"
+                autoFocus
+              />
+              <div className="flex gap-2 w-full">
+                <button
+                  onClick={() => { setIsEditingEmail(false); setMessage(""); }}
+                  className="px-3 py-2 rounded-xl bg-zinc-900 text-[8px] font-black uppercase tracking-widest text-zinc-600 active:scale-95 transition-all"
+                >
+                  X
+                </button>
+                <button
+                  onClick={updateEmail}
+                  disabled={uploading}
+                  className="flex-1 py-2 rounded-xl bg-green-600 text-[8px] uppercase tracking-widest text-black font-black active:scale-95 transition-all shadow-lg shadow-green-900/20"
+                >
+                  {uploading ? "..." : "Confirmar"}
+                </button>
+              </div>
             </div>
           )}
-          {uploading && (
-            <div className="absolute inset-0 bg-black/70 flex items-center justify-center backdrop-blur-sm">
-              <FiLoader className="text-green-500 animate-spin" size={24} />
+
+          {/* MENSAJES DE ESTADO */}
+          {message && (
+            <div className="mt-3 flex items-center gap-2 animate-pulse">
+              <div className="w-1 h-1 bg-green-500 rounded-full" />
+              <p className="text-[8px] text-green-500 font-black uppercase tracking-widest leading-relaxed">
+                {message}
+              </p>
             </div>
           )}
         </div>
 
-        {/* BOTÓN FLOTANTE CÁMARA */}
-        <button
-          onClick={() => fileInputRef.current?.click()}
-          disabled={uploading}
-          className="absolute bottom-1 right-1 bg-orange-400 p-2.5 rounded-full border-[4px] border-black shadow-lg active:scale-75 transition-transform disabled:opacity-50"
-        >
-          <FiCamera className="text-black" size={10} />
-        </button>
-      </div>
+        {/* 2. DERECHA: SECCIÓN DE AVATAR */}
+        <div className="relative shrink-0">
+          {/* Glow exterior sutil */}
+          <div className="absolute -inset-1 rounded-full bg-green-500/10 blur-lg opacity-70 transition-opacity duration-1000"></div>
+          
+          <div
+            className="relative w-24 h-24 rounded-full bg-gradient-to-b from-zinc-800 to-black border-2 border-green-500/30 p-1 overflow-hidden shadow-[inset_0_1px_2px_rgba(255,255,255,0.1)] active:scale-95 transition-transform cursor-pointer"
+            onClick={() => !uploading && fileInputRef.current?.click()}
+          >
+            {/* Luz radial interna desde abajo */}
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom,rgba(34,197,94,0.15)_0%,transparent_70%)] pointer-events-none" />
 
-      {/* REGLAS TÉCNICAS SUTILES */}
-      <div className="flex gap-3 mb-6 opacity-30">
-        <span className="text-[7px] font-black uppercase tracking-[0.2em] text-white">
-          MAX 2MB
-        </span>
-        <span className="text-[7px] font-black uppercase tracking-[0.2em] text-white">
-          PNG / JPG
-        </span>
-      </div>
-
-      {/* 2. INFORMACIÓN Y EDICIÓN DE EMAIL */}
-      <div className="text-center w-full px-6 min-h-[140px]">
-        <h2 className="text-2xl font-bold tracking-tight capitalize text-white mb-4">
-          {nombre}
-        </h2>
-
-       {!isEditingEmail ? (
-  /* MODO VISTA: PÍLDORA CON LÁPIZ VERDE */
-  <button
-    onClick={() => {
-      setIsEditingEmail(true);
-      setNewEmail(user.email);
-    }}
-    className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-zinc-900/40 border border-white/5 active:scale-95 transition-all shadow-xl"
-  >
-    <p className="text-zinc-400 text-[11px] font-black uppercase tracking-[0.15em]">
-      {user.email}
-    </p>
-    {/* EL LÁPIZ VERDE SUSTITUYENDO AL PUNTO */}
-    <FiEdit2 className="text-green-500" size={12} />
-  </button>
-) : (
-          /* MODO EDICIÓN: FORMULARIO TÁCTIL */
-          <div className="flex flex-col items-center gap-3 animate-in fade-in zoom-in duration-300 max-w-[300px] mx-auto">
-            <input
-              type="email"
-              value={newEmail}
-              onChange={(e) => setNewEmail(e.target.value)}
-              className="w-full bg-zinc-900 border border-green-500/30 rounded-2xl px-4 py-4 text-center text-sm text-white focus:outline-none focus:border-green-500 transition-all shadow-[0_0_20px_rgba(34,17,9,0.05)]"
-              placeholder="nuevo@email.com"
-              autoFocus
-            />
-            <div className="flex gap-2 w-full">
-              <button
-                onClick={() => {
-                  setIsEditingEmail(false);
-                  setMessage("");
-                }}
-                className="flex-1 py-4 rounded-2xl bg-zinc-800 text-[10px] font-black uppercase tracking-widest text-zinc-500 active:scale-95 transition-all"
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={updateEmail}
-                disabled={uploading}
-                className="flex-1 py-4 rounded-2xl bg-green-600 text-[10px] uppercase tracking-widest text-black font-bold active:scale-95 transition-all disabled:opacity-50 shadow-lg shadow-green-900/20"
-              >
-                {uploading ? "..." : "Guardar"}
-              </button>
-            </div>
+            {avatarUrl ? (
+              <img
+                src={avatarUrl}
+                alt="Perfil"
+                className="w-full h-full rounded-full object-cover border border-zinc-900"
+              />
+            ) : (
+              <div className="w-full h-full rounded-full bg-zinc-900 flex items-center justify-center">
+                <span className="text-2xl font-black text-zinc-700 uppercase tracking-tighter">
+                  {user.email?.[0]}
+                </span>
+              </div>
+            )}
+            
+            {uploading && (
+              <div className="absolute inset-0 bg-black/80 flex items-center justify-center backdrop-blur-sm">
+                <FiLoader className="text-green-500 animate-spin" size={18} />
+              </div>
+            )}
           </div>
-        )}
-        {/* MENSAJES DE ESTADO */}
-        {/* MENSAJE DE ESTADO CON LÁPIZ ANIMADO */}
-{message && (
-  <div className="mt-6 flex items-center justify-center gap-2 animate-pulse">
-    <FiEdit2 className="text-green-500" size={10} />
-    <p className="text-[10px] text-green-500 font-black uppercase tracking-widest leading-relaxed">
-      {message}
-    </p>
-  </div>
-)}
+
+          {/* BOTÓN FLOTANTE CÁMARA */}
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            disabled={uploading}
+            className="absolute -bottom-1 -right-1 bg-gradient-to-br from-orange-400 to-orange-600 p-2.5 rounded-full border-[3px] border-black shadow-xl active:scale-75 transition-transform"
+          >
+            <FiCamera className="text-black" size={12} />
+          </button>
+        </div>
+      </div>
+
+      {/* REGLAS TÉCNICAS (AHORA EN LA BASE, MÁS DISCRETAS) */}
+      <div className="flex gap-4 mt-6 opacity-30 justify-center sm:justify-start">
+        <span className="text-[7px] font-black uppercase tracking-[0.2em] text-zinc-500">MAX 2MB</span>
+        <span className="text-[7px] font-black uppercase tracking-[0.2em] text-zinc-500">PNG / JPG</span>
       </div>
     </div>
   );
