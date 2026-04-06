@@ -152,7 +152,7 @@ export default function GymApp({
       {/* 2. Imagen del Ejercicio */}
       <ExerciseImage path={info.imagen_url} alt={info.nombre} />
       {/* 3. Indicadores (Reps, Timer, Sets) */}
-     <div className="flex justify-around items-center mb-12">
+  <div className="flex justify-around items-center mt-12 mb-12 px-2">
   <StatCircle
     value={targetReps}
     label="Reps"
