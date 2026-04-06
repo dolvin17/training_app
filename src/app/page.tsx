@@ -82,7 +82,7 @@ export default function MenuPrincipal() {
           </div>
           <div>
             <span className="text-lg font-bold block leading-tight">
-              Mi Progreso
+            Progreso
             </span>
             <span className="text-[9px] text-zinc-500 uppercase font-black tracking-widest mt-1 block">
               Racha, volumen y estadísticas

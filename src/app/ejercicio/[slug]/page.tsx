@@ -16,6 +16,7 @@ import RestTimer from "@/components/RestTimer";
 import { FiInfo, FiChevronLeft } from "react-icons/fi";
 import { use } from "react";
 
+
 export default function GymApp({
   params,
 }: {
@@ -26,7 +27,7 @@ export default function GymApp({
   const [timerKey, setTimerKey] = useState<number>(0);
   const [info, setInfo] = useState<any>(null); // Datos de la tabla 'ejercicios'
   const [showPopup, setShowPopup] = useState(false);
-
+const [user, setUser] = useState<any>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -63,6 +64,18 @@ export default function GymApp({
     if (info) cargarDatos();
   }, [info]);
 
+  useEffect(() => {
+  const checkUser = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      router.push("/login");
+    } else {
+      setUser(session.user); // Guardamos el usuario para la cabecera
+    }
+  };
+  checkUser();
+}, [router]);
+
   const manejarNuevaSerie = async (nuevaSerie: Partial<SerieEntrenamiento>) => {
     try {
       await saveSerie({ ...nuevaSerie, nombre_ejercicio: slug }); // Guardamos el slug como FK
@@ -91,15 +104,35 @@ export default function GymApp({
           className="text-zinc-500 text-2xl cursor-pointer hover:text-green-500 transition-colors"
           onClick={() => router.back()}
         />
-        <h1 className="text-xl font-bold text-center tracking-tight">
-          {info.nombre}
-        </h1>
+      <h1 className="text-sm font-black text-center uppercase tracking-[0.2em] flex-1 truncate">
+    {info.nombre}
+  </h1>
         <button
-          onClick={() => setShowPopup(true)}
-          className="text-green-500 text-xs cursor-pointer font-bold uppercase tracking-widest flex items-center gap-2 bg-green-500/10 px-3 py-2 rounded-full border border-green-500/20"
-        >
-          <FiInfo size={14} /> Info
-        </button>
+      onClick={() => setShowPopup(true)}
+      className="text-green-500 p-2 cursor-pointer rounded-full bg-green-500/10 border border-green-500/20 active:scale-90 transition-transform"
+    >
+      <FiInfo size={16} />
+    </button>
+
+    {/* MINIATURA DEL USUARIO (AVATAR) */}
+<div 
+  onClick={() => router.push("/dashboard")}
+  className="w-10 h-10 rounded-full bg-zinc-900 border border-white/10 p-0.5 cursor-pointer active:scale-90 transition-all overflow-hidden shadow-lg shadow-green-500/5 flex-shrink-0"
+>
+  {user?.user_metadata?.avatar_url ? (
+    <img 
+      src={user.user_metadata.avatar_url} 
+      alt="Dashboard" 
+      className="w-full h-full rounded-full object-cover"
+    />
+  ) : (
+    <div className="w-full h-full rounded-full bg-zinc-800 flex items-center justify-center">
+      <span className="text-[10px] font-black text-zinc-500 uppercase">
+        {user?.email?.[0]}
+      </span>
+    </div>
+  )}
+</div>
       </div>
       {/* 2. Imagen del Ejercicio */}
       <ExerciseImage path={info.imagen_url} alt={info.nombre} />
