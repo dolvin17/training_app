@@ -38,3 +38,9 @@ export interface InteractiveStatProps {
   activeColor?: 'green' | 'orange';
   onClick?: () => void;
 }
+
+export interface SearchBarProps {
+  value: string;
+  onChange: (val: string) => void;
+  placeholder?: string;
+}
