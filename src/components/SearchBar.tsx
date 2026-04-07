@@ -52,14 +52,6 @@ export default function SearchBar({ value, onChange, placeholder = "Buscar ejerc
 
       {/* 3. Metadata técnica con texto neón */}
       <div className="flex justify-between mt-3 px-3">
-        <span className="text-[7px] font-black uppercase tracking-[0.4em] text-zinc-800">
-          Search_Protocol_v2.0
-        </span>
-        <span className={`text-[7px] font-black uppercase tracking-[0.4em] transition-all duration-500 ${
-          value ? 'text-green-400 drop-shadow-[0_0_5px_#ccff00]' : 'text-zinc-800'
-        }`}>
-          {value.length > 0 ? `LINK_FOUND` : "WAITING_FOR_INPUT"}
-        </span>
       </div>
     </div>
   );
