@@ -78,7 +78,7 @@ return (
       <div className="flex items-center gap-2">
         <div className="w-2 h-2 rounded-full bg-[#ff4d00] shadow-[0_0_8px_#ff4d00] animate-pulse" />
         <p className="text-orange-600/70 text-[10px] font-black uppercase tracking-[0.3em]">
-          System Status: {ejerciciosFiltrados.length} Unidades Listas
+          Status: {ejerciciosFiltrados.length} Ejercicios disponibles
         </p>
       </div>
     </header>
