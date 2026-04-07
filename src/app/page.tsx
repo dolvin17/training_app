@@ -173,7 +173,7 @@ return (
     <footer className="mt-24 pb-12 text-center">
       <div className="h-px w-16 bg-gradient-to-r from-transparent via-orange-800 to-transparent mx-auto mb-6" />
       <p className="text-orange-900 text-[9px] uppercase tracking-[0.5em] font-black italic">
-        Console Training System — 2026
+        2026
       </p>
     </footer>
   </div>
