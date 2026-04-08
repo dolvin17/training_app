@@ -5,7 +5,6 @@ import { useState, useEffect } from "react";
 import { getAllEjercicios } from "@/actions/entrenamientos";
 import { supabase } from "@/config/supabase";
 import SearchBar from "@/components/SearchBar";
-import ProteinTracker from "@/components/ProteinUpdate";
 import ProtocoloEndocrino from "@/components/ProtocoloEndocrino";
 import { getNutritionDashboard } from "@/actions/entrenamientos";
 import { UserNutritionGoals } from "@/types";
@@ -111,7 +110,7 @@ export default function MenuPrincipal() {
   return (
     <div className="min-h-screen bg-[#050505] text-white p-4 sm:p-8 w-full max-w-full md:max-w-2xl mx-auto selection:bg-orange-500/30">
       <header className="mb-12 mt-6 animate-in fade-in slide-in-from-top-4 duration-700">
-        <h1 className="text-4xl font-black tracking-tighter mb-1 uppercase">
+        <h1 className="text-2xl font-black tracking-tighter mb-1 uppercase">
           Hola,{" "}
           <span className="bg-gradient-to-r from-green-500 to-green-600 bg-clip-text text-transparent drop-shadow-[0_0_10px_rgba(204,255,0,0.3)]">
             {userName}
@@ -142,8 +141,8 @@ export default function MenuPrincipal() {
               <FiBarChart2 size={28} />
             </div>
             <div>
-              <span className="text-xl font-black block tracking-tight uppercase italic">
-                Mi Progreso
+              <span className="text-xl text-orange-300 font-black block tracking-tight uppercase">
+                Progreso
               </span>
               <span className="text-[10px] text-orange-500 uppercase font-black tracking-widest mt-1 block group-hover:text-white transition-colors">
                 Data & Stats Center
@@ -200,7 +199,7 @@ export default function MenuPrincipal() {
                   <FiActivity size={20} />
                 </div>
                 <div>
-                  <span className="text-lg font-black block leading-tight text-white group-hover:text-orange-400 transition-colors">
+                  <span className="text-base  block leading-tight text-orange-300 group-hover:text-orange-400 transition-colors">
                     {ex.nombre}
                   </span>
                   <span className="text-[9px] text-green-600/60 uppercase font-black tracking-widest mt-1 block group-hover:text-white/60">
@@ -228,7 +227,7 @@ export default function MenuPrincipal() {
       <footer className="mt-24 pb-12 text-center">
         <div className="h-px w-16 bg-gradient-to-r from-transparent via-orange-800 to-transparent mx-auto mb-6" />
         <p className="text-orange-900 text-[9px] uppercase tracking-[0.5em] font-black italic">
-          2026
+          METRICA 2026
         </p>
       </footer>
     </div>
