@@ -11,13 +11,23 @@ import {
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import UserProfile from "@/components/UserProfile";
+import NutritionSettings from "@/components/NutritionSettings";
+import { getNutritionDashboard } from "@/actions/entrenamientos";
+
 
 export default function Dashboard() {
   const [stats, setStats] = useState<any>(null);
+  const [nutriData, setNutriData] = useState<any>(null);
   const router = useRouter();
 
-  useEffect(() => {
-    getDashboardData().then(setStats);
+ useEffect(() => {
+    Promise.all([
+      getDashboardData(),
+      getNutritionDashboard()
+    ]).then(([statsData, nutritionData]) => {
+      setStats(statsData);
+      setNutriData(nutritionData);
+    });
   }, []);
 
   if (!stats)
@@ -38,6 +48,7 @@ export default function Dashboard() {
         <div className="w-6" />
       </header>
       <UserProfile />
+      <NutritionSettings initialData={nutriData?.goals} />
 
       {/* FILA SUPERIOR: RACHA Y SESIONES (COMPACTAS) */}
       <div className="grid grid-cols-2 gap-4 mb-10">
