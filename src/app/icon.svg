@@ -1,0 +1,102 @@
+
+  <svg 
+    viewBox="0 0 100 100" 
+    className="w-16 h-16 drop-shadow-[0_0_8px_rgba(34,197,94,0.3)]"
+    fill="none" 
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    {/* Humanoide de Palitos - Biomecánica Minimalista */}
+    <g strokeWidth="2" strokeLinecap="round">
+      
+      {/* 1. Cabeza y Torso (Estáticos) */}
+      <circle cx="50" cy="20" r="5" stroke="#FFFFFF" className="opacity-80" />
+      <path d="M50 25 V50" stroke="#FFFFFF" className="opacity-80" /> {/* Columna */}
+      <path d="M35 28 H65" stroke="#FFFFFF" className="opacity-80" /> {/* Hombros */}
+      <path d="M40 50 H60" stroke="#FFFFFF" className="opacity-80" /> {/* Cadera */}
+      
+      {/* 2. Piernas (Estáticas) */}
+      <path d="M42 50 V75 L42 85" stroke="#FFFFFF" className="opacity-80" />
+      <path d="M58 50 V75 L58 85" stroke="#FFFFFF" className="opacity-80" />
+
+      {/* 3. Brazos Animados (Curl de Bíceps) */}
+      <g stroke="#22C55E"> {/* green-500 */}
+        
+        {/* Brazo Derecho */}
+        <path d="M35 28 L35 45 L25 45">
+          <animate 
+            attributeName="d" 
+            dur="1.5s" 
+            repeatCount="indefinite"
+            values="M35 28 L35 45 L25 45; M35 28 L35 35 L28 28; M35 28 L35 45 L25 45" 
+            calcMode="spline" 
+            keySplines="0.42 0 0.58 1; 0.42 0 0.58 1"
+          />
+        </path>
+        
+        {/* Brazo Izquierdo */}
+        <path d="M65 28 L65 45 L75 45">
+          <animate 
+            attributeName="d" 
+            dur="1.5s" 
+            repeatCount="indefinite"
+            values="M65 28 L65 45 L75 45; M65 28 L65 35 L72 28; M65 28 L65 45 L75 45" 
+            calcMode="spline" 
+            keySplines="0.42 0 0.58 1; 0.42 0 0.58 1"
+          />
+        </path>
+      </g>
+      
+      {/* 4. Mancuernas Animadas (Hexagonales) */}
+      <g fill="#FFFFFF" className="opacity-90">
+        
+        {/* Mancuerna Derecha */}
+        <polygon points="20 42 28 42 30 45 28 48 20 48 18 45">
+          <animateTransform 
+            attributeName="transform" 
+            type="translate"
+            dur="1.5s" 
+            repeatCount="indefinite"
+            values="0,0; 3,-17; 0,0"
+            calcMode="spline" 
+            keySplines="0.42 0 0.58 1; 0.42 0 0.58 1"
+          />
+        </polygon>
+        
+        {/* Mancuerna Izquierda */}
+        <polygon points="72 42 80 42 82 45 80 48 72 48 70 45">
+          <animateTransform 
+            attributeName="transform" 
+            type="translate"
+            dur="1.5s" 
+            repeatCount="indefinite"
+            values="0,0; -3,-17; 0,0"
+            calcMode="spline" 
+            keySplines="0.42 0 0.58 1; 0.42 0 0.58 1"
+          />
+        </polygon>
+      </g>
+      
+      {/* 5. Articulaciones (Puntos de Energía) */}
+      <g fill="#22C55E"> {/* green-500 */}
+        <circle cx="35" cy="28" r="2" /> {/* Hombro D */}
+        <circle cx="65" cy="28" r="2" /> {/* Hombro I */}
+        
+        {/* Articulaciones de Codo y Muñeca (Animadas) */}
+        <circle cx="35" cy="45" r="2">
+          <animate attributeName="cy" dur="1.5s" repeatCount="indefinite" values="45;35;45" calcMode="spline" keySplines="0.42 0 0.58 1; 0.42 0 0.58 1" />
+        </circle>
+        <circle cx="25" cy="45" r="2">
+          <animate attributeName="cx" dur="1.5s" repeatCount="indefinite" values="25;28;25" calcMode="spline" keySplines="0.42 0 0.58 1; 0.42 0 0.58 1" />
+          <animate attributeName="cy" dur="1.5s" repeatCount="indefinite" values="45;28;45" calcMode="spline" keySplines="0.42 0 0.58 1; 0.42 0 0.58 1" />
+        </circle>
+        <circle cx="65" cy="45" r="2">
+          <animate attributeName="cy" dur="1.5s" repeatCount="indefinite" values="45;35;45" calcMode="spline" keySplines="0.42 0 0.58 1; 0.42 0 0.58 1" />
+        </circle>
+        <circle cx="75" cy="45" r="2">
+          <animate attributeName="cx" dur="1.5s" repeatCount="indefinite" values="75;72;75" calcMode="spline" keySplines="0.42 0 0.58 1; 0.42 0 0.58 1" />
+          <animate attributeName="cy" dur="1.5s" repeatCount="indefinite" values="45;28;45" calcMode="spline" keySplines="0.42 0 0.58 1; 0.42 0 0.58 1" />
+        </circle>
+      </g>
+
+    </g>
+  </svg>
