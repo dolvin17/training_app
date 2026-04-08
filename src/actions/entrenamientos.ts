@@ -1,7 +1,7 @@
 "use server";
 
-import { createClient } from "@/config/supabaseServer"; // Tu cliente de servidor
-import { SerieEntrenamiento } from "@/types";
+import { createClient } from "@/config/supabaseServer";
+import { SerieEntrenamiento, UserNutritionGoals } from "@/types";
 import { revalidatePath } from "next/cache";
 
 export async function getHistorial(nombreEjercicio: string) {
@@ -47,7 +47,7 @@ export const deleteSerie = async (id: string) => {
 
   if (error) throw error;
   
-  revalidatePath("/"); // Para que Next.js sepa que los datos cambiaron
+  revalidatePath("/"); 
 };
 
 export async function getInfoEjercicio(slug: string) {
@@ -74,7 +74,6 @@ export async function getDashboardData() {
   const { data: { session } } = await supabase.auth.getSession();
   if (!session) return null;
 
-  // 1. Pedimos 'fecha' en lugar de 'created_at'
   const { data: entrenamientos, error } = await supabase
     .from("entrenamientos")
     .select("fecha, peso, reps, nombre_ejercicio")
@@ -85,7 +84,6 @@ export async function getDashboardData() {
     return { racha: 0, volumenPorEjercicio: [], totalEntrenamientos: 0 };
   }
 
-  // 2. Lógica de Racha (Streak) usando la columna 'fecha'
   const fechasUnicas = Array.from(new Set(entrenamientos.map(e => 
     new Date(e.fecha).toISOString().split('T')[0]
   )));
@@ -105,8 +103,6 @@ export async function getDashboardData() {
       break;
     }
   }
-
-  // 3. Volumen por Ejercicio (Últimos 30 días)
   const unMesAtras = new Date();
   unMesAtras.setDate(unMesAtras.getDate() - 30);
 
@@ -125,12 +121,7 @@ export async function getDashboardData() {
     total: agruparVolumen[nombre]
   })).sort((a, b) => b.total - a.total);
 
-// ... (después del volumenPorEjercicio)
-
-  // 4. Obtener todos los ejercicios para saber su grupo muscular
   const { data: ejercicios } = await supabase.from("ejercicios").select("slug, grupo_muscular");
-
-  // 5. Filtrar series de hoy y agrupar por músculo
   const hoyStr = new Date().toISOString().split('T')[0];
   const seriesDeHoy = entrenamientos.filter(e => 
     new Date(e.fecha).toISOString().split('T')[0] === hoyStr
@@ -145,8 +136,8 @@ export async function getDashboardData() {
 
   return { 
     racha, 
-    volumenPorEjercicio, 
-    seriesHoy: conteoPorMusculo // <--- Enviamos el objeto con los grupos
+    volumenPorEjercicio,
+    seriesHoy: conteoPorMusculo
   };
 }
 
@@ -161,11 +152,119 @@ export async function getEjercicioHistory(slug: string) {
     .select("fecha, peso")
     .eq("nombre_ejercicio", slug)
     .eq("user_id", session.user.id)
-    .order("fecha", { ascending: true }); // Ascendente para que la gráfica avance a la derecha
+    .order("fecha", { ascending: true });
 
-  // Formateamos para la gráfica: "2026-04-05" -> "05/04"
   return data?.map(e => ({
     date: new Date(e.fecha).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit' }),
     peso: e.peso
   })) || [];
+}
+
+// --- NUTRICIÓN, PASOS Y AGUA ---
+
+export async function addProteinIntake(grams: number) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("No session");
+
+  const { error } = await supabase.from('protein_logs').insert({
+    user_id: user.id,
+    grams
+  });
+
+  if (error) throw error;
+  revalidatePath("/");
+}
+
+export async function addWaterIntake(ml: number) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("No session");
+
+  const today = new Date().toISOString().split('T')[0];
+  const { error } = await supabase.from('water_logs').insert({
+    user_id: user.id,
+    ml,
+    date: today
+  });
+
+  if (error) throw error;
+  revalidatePath("/");
+}
+
+export async function updateDailySteps(steps: number) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("No session");
+
+  const today = new Date().toISOString().split('T')[0];
+  const { error } = await supabase.from('step_logs').upsert({
+    user_id: user.id,
+    steps,
+    date: today
+  });
+
+  if (error) throw error;
+  revalidatePath("/");
+}
+
+export async function getNutritionDashboard() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return null;
+
+  const today = new Date().toISOString().split('T')[0];
+
+  // 1. Metas (Filtrado por usuario)
+  const { data: goals } = await supabase
+    .from('user_nutrition_goals')
+    .select('*')
+    .eq('user_id', user.id)
+    .single();
+
+  // 2. Proteína de hoy (SOLO LA TUYA)
+  const { data: protein } = await supabase
+    .from('protein_logs')
+    .select('grams')
+    .eq('user_id', user.id) // <--- FILTRO AÑADIDO
+    .gte('created_at', `${today}T00:00:00Z`);
+
+  // 3. Agua de hoy (SOLO LA TUYA)
+  const { data: water } = await supabase
+    .from('water_logs')
+    .select('ml')
+    .eq('user_id', user.id) // <--- FILTRO AÑADIDO
+    .eq('date', today);
+
+  // 4. Pasos de hoy (Filtrado por usuario)
+  const { data: steps } = await supabase
+    .from('step_logs')
+    .select('steps')
+    .eq('user_id', user.id)
+    .eq('date', today)
+    .single();
+
+  return {
+    goals: goals || { protein_goal_g: 150, num_intakes: 4, steps_goal: 10000, water_goal_l: 3 },
+    proteinHistory: protein?.map(p => p.grams) || [],
+    waterTotal: water?.reduce((acc, curr) => acc + curr.ml, 0) || 0,
+    stepsToday: steps?.steps || 0
+  };
+}
+
+export async function updateNutritionSettings(settings: Omit<UserNutritionGoals, 'user_id' | 'updated_at'>) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("No session");
+
+  const { error } = await supabase
+    .from('user_nutrition_goals')
+    .upsert({
+      user_id: user.id,
+      ...settings,
+      updated_at: new Date().toISOString()
+    });
+
+  if (error) throw error;
+  revalidatePath("/");
 }
