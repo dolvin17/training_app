@@ -6,8 +6,12 @@ import { getAllEjercicios } from "@/actions/entrenamientos";
 import { supabase } from "@/config/supabase";
 import SearchBar from "@/components/SearchBar";
 import ProtocoloEndocrino from "@/components/ProtocoloEndocrino";
-import { getNutritionDashboard } from "@/actions/entrenamientos";
+import {
+  getNutritionDashboard,
+  getAllRutinasFull,
+} from "@/actions/entrenamientos";
 import { UserNutritionGoals } from "@/types";
+import RutinasModule from "@/components/RutinasModule";
 
 export default function MenuPrincipal() {
   const [todosLosEjercicios, setTodosLosEjercicios] = useState<any[]>([]);
@@ -16,7 +20,7 @@ export default function MenuPrincipal() {
   const [query, setQuery] = useState(""); // Estado para la búsqueda
   const [loading, setLoading] = useState(true);
   const [userName, setUserName] = useState("");
-
+  const [rutinas, setRutinas] = useState<any[]>([]);
   const categorias = [
     "Todos",
     "Pecho",
@@ -48,10 +52,11 @@ export default function MenuPrincipal() {
 
   useEffect(() => {
     async function cargar() {
-      // 1. Obtener sesión para el nombre
+      // 1. Obtener la sesión primero para el nombre
       const {
         data: { session },
       } = await supabase.auth.getSession();
+
       if (session) {
         setUserName(
           session.user.user_metadata?.full_name ||
@@ -59,19 +64,23 @@ export default function MenuPrincipal() {
         );
       }
 
-      // 2. CARGA EN PARALELO: Ejercicios + Datos del Endocrino
-      const [dataEjercicios, dataNutricion] = await Promise.all([
-        getAllEjercicios(),
-        getNutritionDashboard(), // Esta es la función que ya tienes en tus actions
-      ]);
+      // 2. CARGA EN PARALELO: Ejecutamos las 3 consultas a la vez
+      try {
+        const [dataEjercicios, dataNutricion, dataRutinas] = await Promise.all([
+          getAllEjercicios(),
+          getNutritionDashboard(),
+          getAllRutinasFull(), // <-- Esto es lo que faltaba cargar eficientemente
+        ]);
 
-      setTodosLosEjercicios(dataEjercicios);
-      setEjerciciosFiltrados(dataEjercicios);
-
-      // Guardamos los datos del endocrino en un estado
-      setNutriData(dataNutricion);
-
-      setLoading(false);
+        setTodosLosEjercicios(dataEjercicios);
+        setEjerciciosFiltrados(dataEjercicios);
+        setNutriData(dataNutricion);
+        setRutinas(dataRutinas); // <-- Guardamos las rutinas en el estado
+      } catch (error) {
+        console.error("Error cargando datos del Dashboard:", error);
+      } finally {
+        setLoading(false);
+      }
     }
     cargar();
   }, []);
@@ -131,6 +140,9 @@ export default function MenuPrincipal() {
           waterTotal={nutriData.waterTotal}
         />
       )}
+
+      {/* AGREGAR ESTO AQUÍ: */}
+      {rutinas.length > 0 && <RutinasModule rutinas={rutinas} />}
       <Link
         href="/dashboard"
         className="group relative mb-14 block active:scale-[0.98] transition-all"
