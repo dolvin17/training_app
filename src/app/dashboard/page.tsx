@@ -4,7 +4,7 @@ import { getDashboardData } from "@/actions/entrenamientos";
 import {
   FiZap,
   FiTrendingUp,
-  FiCalendar,
+  FiList,
   FiChevronLeft,
   FiChevronRight,
 } from "react-icons/fi"; // <--- Añade FiChevronRight aquí
@@ -39,16 +39,34 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-black text-white p-4 sm:p-6 w-full max-w-full md:max-w-2xl mx-auto">
-      <header className="flex items-center justify-between mb-8 mt-4">
-        <FiChevronLeft
-          className="text-green-500 text-2xl cursor-pointer hover:text-white transition-colors"
-          onClick={() => router.back()}
-        />
-        <h1 className="text-xl font-bold tracking-tight">Progreso</h1>
-        <div className="w-6" />
-      </header>
+    <header className="flex items-center justify-between mb-8 mt-4">
+  <FiChevronLeft
+    className="text-green-500 text-2xl cursor-pointer hover:text-white transition-colors"
+    // CAMBIO: De router.back() a router.push("/")
+    onClick={() => router.push("/")} 
+  />
+  <h1 className="text-xl font-bold tracking-tight">Progreso</h1>
+  <div className="w-6" />
+</header>
       <UserProfile />
       <NutritionSettings initialData={nutriData?.goals} />
+      <Link 
+  href="/dashboard/rutinas" 
+  className="flex items-center justify-between bg-zinc-900 border border-white/5 p-6 rounded-3xl active:scale-[0.98] transition-all mb-6"
+>
+  <div className="flex items-center gap-4">
+    <div className="w-12 h-12 bg-green-500/10 rounded-2xl flex items-center justify-center text-green-500">
+      <FiList size={24} />
+    </div>
+    <div>
+      <h3 className="text-sm font-black uppercase tracking-widest text-white">Mis Rutinas</h3>
+      <p className="text-[10px] text-zinc-500 uppercase font-bold">Gestionar planes y sesiones</p>
+    </div>
+  </div>
+  <div className="bg-white/5 p-2 rounded-full text-zinc-500">
+    <FiChevronRight size={16} />
+  </div>
+</Link>
 
       {/* FILA SUPERIOR: RACHA Y SESIONES (COMPACTAS) */}
       <div className="grid grid-cols-2 gap-4 mb-10">

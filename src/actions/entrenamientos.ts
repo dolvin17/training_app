@@ -64,11 +64,10 @@ export async function getAllEjercicios() {
   const supabase = await createClient();
   const { data } = await supabase
     .from("ejercicios")
-    .select("slug, nombre, grupo_muscular")
+    .select("id, slug, nombre, grupo_muscular") // <--- Añade 'id' aquí
     .order("nombre", { ascending: true });
   return data || [];
 }
-
 export async function getDashboardData() {
   const supabase = await createClient();
   const { data: { session } } = await supabase.auth.getSession();
@@ -267,4 +266,106 @@ export async function updateNutritionSettings(settings: Omit<UserNutritionGoals,
 
   if (error) throw error;
   revalidatePath("/");
+}
+
+// --- RUTINAS Y PLANIFICACIÓN ---
+
+export async function saveRutina(rutina: any) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  
+  if (!user) throw new Error("Debes estar logeado");
+
+  // Añadimos esta línea para crear el slug
+  const slug = rutina.nombrePlan.toLowerCase().replace(/ /g, "-").replace(/[^\w-]+/g, "");
+
+  const { error } = await supabase.from("rutinas").upsert({
+    user_id: user.id,
+    slug: slug, // <--- Asegúrate de enviar el slug
+    nombre_plan: rutina.nombrePlan,
+    configuracion: rutina.configuracion,
+    dias_semanales: rutina.diasActivos,
+    updated_at: new Date().toISOString()
+  });
+
+  if (error) throw new Error(error.message);
+  revalidatePath("/dashboard/rutinas");
+}
+export async function getRutinaActual() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return null;
+
+  const { data, error } = await supabase
+    .from("rutinas")
+    .select("*")
+    .eq("user_id", user.id)
+    .single();
+
+  if (error && error.code !== 'PGRST116') throw error; // Ignorar error si no hay resultados
+  return data;
+}
+
+export async function getMisRutinas() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return [];
+
+  const { data, error } = await supabase
+    .from("rutinas")
+    .select("nombre_plan, slug, dias_semanales, created_at")
+    .eq("user_id", user.id)
+    .order("created_at", { ascending: false });
+
+  if (error) throw error;
+  return data || [];
+}
+
+export async function getRutinaBySlug(slug: string) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return null;
+
+  const { data, error } = await supabase
+    .from("rutinas")
+    .select("*")
+    .eq("slug", slug)
+    .eq("user_id", user.id)
+    .single();
+
+  if (error) return null;
+  return data;
+}
+
+export async function deleteRutina(slug: string) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("No session");
+
+  const { error } = await supabase
+    .from("rutinas")
+    .delete()
+    .eq("slug", slug)
+    .eq("user_id", user.id);
+
+  if (error) throw error;
+  revalidatePath("/dashboard/rutinas");
+}
+
+export async function getAllRutinasFull() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return [];
+
+  const { data, error } = await supabase
+    .from("rutinas")
+    .select("*") // Traemos todo, incluyendo la 'configuracion'
+    .eq("user_id", user.id)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("Error cargando rutinas:", error.message);
+    return [];
+  }
+  return data || [];
 }
