@@ -4,10 +4,9 @@ export interface SerieEntrenamiento {
   nombre_ejercicio: string;
   peso: number;
   reps: number;
-  comentario: string;
+  comentario?: string; // <--- Añade el "?" aquí para que sea opcional
   fecha?: string;
 }
-
 export interface StatProps {
   value: string | number;
   label: string;
@@ -86,4 +85,29 @@ export interface ProtocoloProps {
   proteinHistory: number[];
   stepsToday: number;
   waterTotal: number;
+}
+
+
+export interface EjercicioSeleccionado {
+  id: string;
+  nombre: string;
+  grupo_muscular: string;
+  imagen_url: string;
+}
+
+export interface DiaEntrenamiento {
+  nombreSesion: string;
+  diaSemana: string;
+  ejercicios: EjercicioSeleccionado[];
+}
+
+export interface RutinaSemanal {
+  nombrePlan: string;
+  diasActivos: number;
+  configuracion: DiaEntrenamiento[];
+}
+
+export interface SelectorEjerciciosProps {
+  ejerciciosDisponibles: any[];
+  onSelect: (ej: EjercicioSeleccionado) => void;
 }
