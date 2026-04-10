@@ -49,7 +49,7 @@ export default function ProteinModule({ goal, numIntakes, history: initialHistor
                 <span className="text-zinc-500 font-black text-[10px]">OBJETIVO: {goal}G</span>
                 {/* Etiqueta de gramos restantes en naranja para resaltar */}
                 <span className="text-orange-500 font-black text-[8px] uppercase tracking-widest">
-                  {remaining > 0 ? `FALTAN ${remaining}G` : "PROTOCOLO COMPLETO"}
+                  {remaining > 0 ? `FALTAN ${remaining}G` : "Rutina completa"}
                 </span>
               </div>
             </div>

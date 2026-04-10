@@ -12,7 +12,7 @@ export default function ConfiguracionInicial({ rutina, setRutina, onNext }: any)
           className="w-full bg-gradient-to-b from-white/5 to-transparent border border-white/10 p-6 rounded-[2rem] text-white font-bold outline-none focus:border-orange-400/50 caret-orange-400"
           value={rutina.nombrePlan}
           onChange={(e) => setRutina({ ...rutina, nombrePlan: e.target.value })}
-          placeholder="EJ: VOLUMEN ALPHA"
+          placeholder="EJ: VOLUMEN"
         />
       </div>
 

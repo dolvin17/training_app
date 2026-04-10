@@ -21,12 +21,12 @@ export default async function DetalleRutina({ params }: { params: Promise<{ slug
       
       {/* Cabecera con Neón Verde */}
       <header className="flex items-center gap-6 mb-12 mt-6 animate-in fade-in slide-in-from-top-4 duration-700">
-        <Link 
-          href="/dashboard" 
-          className="p-3 rounded-2xl bg-white/5 border border-white/10 text-zinc-500 hover:text-green-400 hover:border-green-500/50 hover:shadow-[0_0_15px_rgba(74,222,128,0.2)] transition-all active:scale-90"
-        >
-          <FiChevronLeft size={24} />
-        </Link>
+       <Link 
+  href="/dashboard/rutinas"
+  className="p-3 rounded-2xl bg-white/5 border border-white/10 text-zinc-500 hover:text-green-400 hover:border-green-500/50 hover:shadow-[0_0_15px_rgba(74,222,128,0.2)] transition-all active:scale-90"
+>
+  <FiChevronLeft size={24} />
+</Link>
         <div>
           <p className="text-orange-500 text-[9px] font-black uppercase tracking-[0.4em] mb-1">
             Visualizando Plan

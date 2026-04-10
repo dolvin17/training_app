@@ -29,7 +29,7 @@ const [loading, setLoading] = useState(false);
     setLoading(true);
     try {
       await updateNutritionSettings(form);
-      alert("Protocolo establecido correctamente.");
+      alert("Rutina establecido correctamente.");
     } catch (err) {
       console.error(err);
       alert("Error al guardar.");
