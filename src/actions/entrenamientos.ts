@@ -272,25 +272,27 @@ export async function updateNutritionSettings(settings: Omit<UserNutritionGoals,
 
 export async function saveRutina(rutina: any) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
   
-  if (!user) throw new Error("Debes estar logeado");
+  // 1. Obtener el ID del usuario actual
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("Debes estar logueado");
 
-  // Añadimos esta línea para crear el slug
-  const slug = rutina.nombrePlan.toLowerCase().replace(/ /g, "-").replace(/[^\w-]+/g, "");
-
-  const { error } = await supabase.from("rutinas").upsert({
-    user_id: user.id,
-    slug: slug, // <--- Asegúrate de enviar el slug
-    nombre_plan: rutina.nombrePlan,
-    configuracion: rutina.configuracion,
-    dias_semanales: rutina.diasActivos,
-    updated_at: new Date().toISOString()
-  });
+  // 2. Usar UPSERT para que si el ID existe, actualice. Si no, cree.
+  const { error } = await supabase
+    .from('rutinas')
+    .upsert({
+      id: rutina.id, // Si es undefined, crea nueva. Si tiene valor, edita.
+      user_id: user.id, // OBLIGATORIO para el RLS
+      nombre_plan: rutina.nombrePlan,
+      slug: rutina.slug,
+      dias_semanales: rutina.diasActivos,
+      configuracion: rutina.configuracion,
+    }, { onConflict: 'id' });
 
   if (error) throw new Error(error.message);
   revalidatePath("/dashboard/rutinas");
 }
+
 export async function getRutinaActual() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
