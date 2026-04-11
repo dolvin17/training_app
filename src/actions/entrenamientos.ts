@@ -148,15 +148,12 @@ export async function getEjercicioHistory(slug: string) {
 
   const { data } = await supabase
     .from("entrenamientos")
-    .select("fecha, peso")
+    .select("fecha, peso, reps") // <--- Necesitamos reps para el volumen y 1RM
     .eq("nombre_ejercicio", slug)
     .eq("user_id", session.user.id)
     .order("fecha", { ascending: true });
 
-  return data?.map(e => ({
-    date: new Date(e.fecha).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit' }),
-    peso: e.peso
-  })) || [];
+  return data || []; // <--- Devuelve el array limpio, no lo formatees aquí
 }
 
 // --- NUTRICIÓN, PASOS Y AGUA ---

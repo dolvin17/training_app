@@ -111,3 +111,11 @@ export interface SelectorEjerciciosProps {
   ejerciciosDisponibles: any[];
   onSelect: (ej: EjercicioSeleccionado) => void;
 }
+
+export interface KpiCardProps {
+  label: string;
+  value: number | string | undefined;
+  unit: string;
+  trend?: string;
+  type: "max_peso" | "one_rm" | "volumen" | "descanso"; // <-- Añade esto (puedes usar string o los tipos exactos)
+}
