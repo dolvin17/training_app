@@ -6,6 +6,7 @@ export interface SerieEntrenamiento {
   reps: number;
   comentario?: string; // <--- Añade el "?" aquí para que sea opcional
   fecha?: string;
+  descanso_segundos?: number;
 }
 export interface StatProps {
   value: string | number;

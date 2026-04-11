@@ -148,7 +148,7 @@ export async function getEjercicioHistory(slug: string) {
 
   const { data } = await supabase
     .from("entrenamientos")
-    .select("fecha, peso, reps") // <--- Necesitamos reps para el volumen y 1RM
+    .select("fecha, peso, reps, descanso_segundos") // <--- Necesitamos reps para el volumen y 1RM
     .eq("nombre_ejercicio", slug)
     .eq("user_id", session.user.id)
     .order("fecha", { ascending: true });
@@ -368,3 +368,4 @@ export async function getAllRutinasFull() {
   }
   return data || [];
 }
+

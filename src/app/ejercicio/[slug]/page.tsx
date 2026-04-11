@@ -13,8 +13,9 @@ import { useRouter } from "next/navigation";
 import { supabase } from "@/config/supabase";
 import ExerciseImage from "@/components/ExerciseImage";
 import RestTimer from "@/components/RestTimer";
-import { FiInfo, FiChevronLeft } from "react-icons/fi";
+import { FiInfo, FiChevronLeft, FiBarChart2} from "react-icons/fi";
 import { use } from "react";
+
 
 export default function GymApp({
   params,
@@ -28,6 +29,11 @@ export default function GymApp({
   const [showPopup, setShowPopup] = useState(false);
   const [targetSets, setTargetSets] = useState(4);
   const [targetReps, setTargetReps] = useState(12);
+  // Valor por defecto del descanso (ej: 90s)
+  const [descansoConfig, setDescansoConfig] = useState(90);
+
+  // Este estado cambiará cada vez que guardes una serie exitosamente
+  const [lastSerieTrigger, setLastSerieTrigger] = useState(0);
 
   const ajustarReps = () => {
     // Ciclo de 5 a 20 reps (por ejemplo)
@@ -75,11 +81,18 @@ export default function GymApp({
     checkUser();
   }, [router]);
 
-  const manejarNuevaSerie = async (nuevaSerie: Partial<SerieEntrenamiento>) => {
+  const manejarNuevaSerie = async (
+    datosDesdeElFormulario: Partial<SerieEntrenamiento>
+  ) => {
     try {
-      await saveSerie({ ...nuevaSerie, nombre_ejercicio: slug }); // Guardamos el slug como FK
-      cargarDatos();
-      setTimerKey((prev) => prev + 1);
+      await saveSerie({
+        ...datosDesdeElFormulario,
+        nombre_ejercicio: slug,
+        descanso_segundos: descansoConfig, // <--- Aquí se une la magia
+      });
+
+      await cargarDatos();
+      setLastSerieTrigger((prev) => prev + 1); // <--- Aquí arranca el timer
     } catch (e) {
       alert("Error al guardar");
     }
@@ -120,64 +133,79 @@ export default function GymApp({
           </h1>
         </div>
 
-        {/* DERECHA: Info + Avatar (Aquí es donde añadimos el gap para que no estén juntos) */}
-        <div className="flex justify-end items-center gap-3">
-          <button
-            onClick={() => setShowPopup(true)}
-            className="text-green-500 p-2 cursor-pointer rounded-full bg-green-500/10 border border-green-500/20 active:scale-90 transition-transform flex items-center justify-center"
-          >
-            <FiInfo size={16} />
-          </button>
 
-          <div
-            onClick={() => router.push("/dashboard")}
-            className="w-10 h-10 rounded-full bg-zinc-900 border border-white/10 p-0.5 cursor-pointer active:scale-90 transition-all overflow-hidden flex-shrink-0"
-          >
-            {user?.user_metadata?.avatar_url ? (
-              <img
-                src={user.user_metadata.avatar_url}
-                alt="Dashboard"
-                className="w-full h-full rounded-full object-cover"
-              />
-            ) : (
-              <div className="w-full h-full rounded-full bg-zinc-800 flex items-center justify-center">
-                <span className="text-[10px] font-black text-zinc-500 uppercase">
-                  {user?.email?.[0]}
-                </span>
-              </div>
-            )}
-          </div>
-        </div>
       </div>
-      {/* 2. Imagen del Ejercicio */}
-      <ExerciseImage path={info.imagen_url} alt={info.nombre} />
-      {/* 3. Indicadores (Reps, Timer, Sets) */}
-  <div className="flex justify-around items-center mt-12 mb-12 px-2">
-  <StatCircle
-    value={targetReps}
-    label="Reps"
-    // NARANJA si aún no hemos alcanzado el objetivo de reps en la última serie
-    activeColor={ultimaSerie?.reps < targetReps ? 'orange' : 'green'} 
-    active={ultimaSerie?.reps > 0} // Se enciende si hay al menos una serie
-    onClick={ajustarReps}
-  />
+    {/* 2. Imagen del Ejercicio + Botonera Vertical */}
+<div className="flex gap-4 items-stretch">
   
-  <RestTimer
-    key={timerKey}
-    initialSeconds={90}
-    autoStart={timerKey > 0}
-    // El check flotante será siempre VERDE al finalizar
-  />
+  {/* Columna de la Imagen (Ocupa el espacio restante) */}
+  <div className="flex-1">
+    <ExerciseImage path={info.imagen_url} alt={info.nombre} />
+  </div>
 
-  <StatCircle
-    value={`${historial.length}/${targetSets}`}
-    label="Series"
-    // NARANJA mientras estamos en proceso, VERDE al terminar todas
-    activeColor={historial.length < targetSets ? 'orange' : 'green'}
-    active={historial.length > 0}
-    onClick={ajustarSets}
-  />
+  {/* Columna de Botones (Vertical y centrada) */}
+  <div className="flex flex-col justify-center py-2 gap-2">
+    
+    {/* Botón Perfil/Avatar */}
+    <div
+      onClick={() => router.push("/dashboard")}
+      className="w-12 h-12 rounded-2xl bg-zinc-900 border border-white/10 p-1 cursor-pointer active:scale-90 transition-all overflow-hidden flex-shrink-0 flex items-center justify-center shadow-lg"
+    >
+      {user?.user_metadata?.avatar_url ? (
+        <img
+          src={user.user_metadata.avatar_url}
+          alt="Perfil"
+          className="w-full h-full rounded-xl object-cover"
+        />
+      ) : (
+        <span className="text-xs font-black text-zinc-500 uppercase">
+          {user?.email?.[0]}
+        </span>
+      )}
+    </div>
+
+    {/* Botón Gráficas (Stats) */}
+    <button
+      onClick={() => router.push(`/dashboard/stats/${slug}`)}
+      className="w-12 h-12 text-yellow-500 rounded-2xl bg-yellow-500/10 border border-yellow-500/20 active:scale-90  gap-4 transition-transform flex items-center justify-center shadow-lg"
+    >
+      <FiBarChart2 size={20} />
+    </button>
+
+    {/* Botón Info (Popup) */}
+    <button
+      onClick={() => setShowPopup(true)}
+      className="w-12 h-12 text-green-500 rounded-2xl bg-green-500/10 border border-green-500/20 active:scale-90 transition-transform flex items-center justify-center shadow-lg"
+    >
+      <FiInfo size={20} />
+    </button>
+  </div>
 </div>
+      {/* 3. Indicadores (Reps, Timer, Sets) */}
+      <div className="flex justify-around items-center mt-12 mb-12 px-2">
+        <StatCircle
+          value={targetReps}
+          label="Reps"
+          // NARANJA si aún no hemos alcanzado el objetivo de reps en la última serie
+          activeColor={ultimaSerie?.reps < targetReps ? "orange" : "green"}
+          active={ultimaSerie?.reps > 0} // Se enciende si hay al menos una serie
+          onClick={ajustarReps}
+        />
+
+        <RestTimer
+          secondsConfig={descansoConfig}
+          triggerStart={lastSerieTrigger}
+        />
+
+        <StatCircle
+          value={`${historial.length}/${targetSets}`}
+          label="Series"
+          // NARANJA mientras estamos en proceso, VERDE al terminar todas
+          activeColor={historial.length < targetSets ? "orange" : "green"}
+          active={historial.length > 0}
+          onClick={ajustarSets}
+        />
+      </div>
       {/* 4. Referencia de peso anterior */}
       <div className="text-center mb-8">
         <p className="text-zinc-500 text-[10px] uppercase tracking-[0.2em] border-b border-white/5 pb-3 inline-block px-6">
@@ -186,15 +214,15 @@ export default function GymApp({
         </p>
       </div>
       {/* 5. Formulario y Comentarios */}
-  {/* 5. Formulario con el nuevo botón ancho */}
-<div className="space-y-6 mb-12">
-  <LogForm 
-    onAddSerie={manejarNuevaSerie} 
-    defaultReps={targetReps} 
-    ultimoPeso={pesoAnterior}
-    // Ya no pasamos el botón "+" aquí dentro
-  />
-</div>
+      {/* 5. Formulario con el nuevo botón ancho */}
+      <div className="space-y-6 mb-12">
+        <LogForm
+          onAddSerie={manejarNuevaSerie}
+          defaultReps={targetReps}
+          ultimoPeso={pesoAnterior}
+          // Ya no pasamos el botón "+" aquí dentro
+        />
+      </div>
       {/* 6. Historial de hoy */}
       <div className="mt-4">
         <h2 className="text-zinc-600 text-[10px] font-black uppercase mb-6 tracking-[0.2em]">
