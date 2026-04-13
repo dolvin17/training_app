@@ -274,14 +274,22 @@ export async function saveRutina(rutina: any) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error("Debes estar logueado");
 
-  // 2. Usar UPSERT para que si el ID existe, actualice. Si no, cree.
+// --- NUEVA LÓGICA DE SANEAMIENTO ---
+  const slugLimpio = rutina.slug
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "") // Quita tildes
+    .replace(/[^a-z0-9]/g, "-")      // Cambia raros por guiones
+    .replace(/-+/g, "-");            // Evita -- dobles
+  // ----------------------------------
+
   const { error } = await supabase
     .from('rutinas')
     .upsert({
-      id: rutina.id, // Si es undefined, crea nueva. Si tiene valor, edita.
-      user_id: user.id, // OBLIGATORIO para el RLS
+      id: rutina.id,
+      user_id: user.id,
       nombre_plan: rutina.nombrePlan,
-      slug: rutina.slug,
+      slug: slugLimpio, // Guardamos el slug ya saneado
       dias_semanales: rutina.diasActivos,
       configuracion: rutina.configuracion,
     }, { onConflict: 'id' });
@@ -325,14 +333,20 @@ export async function getRutinaBySlug(slug: string) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return null;
 
+  // Decodificamos por si la URL trae caracteres como %C3...
+  const slugBusqueda = decodeURIComponent(slug);
+
   const { data, error } = await supabase
     .from("rutinas")
     .select("*")
-    .eq("slug", slug)
+    .eq("slug", slugBusqueda)
     .eq("user_id", user.id)
     .single();
 
-  if (error) return null;
+  if (error) {
+    console.error("Error en getRutinaBySlug:", error.message);
+    return null;
+  }
   return data;
 }
 
