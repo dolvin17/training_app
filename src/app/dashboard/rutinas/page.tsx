@@ -1,6 +1,7 @@
 import { getMisRutinas } from "@/actions/entrenamientos";
 import Link from "next/link";
-import { FiPlus, FiChevronLeft, FiLayers, FiCalendar } from "react-icons/fi";
+import { FiPlus, FiChevronLeft, FiLayers, FiCalendar, FiList } from "react-icons/fi";
+import { FaPencil } from "react-icons/fa6";
 
 export default async function RutinasPage() {
   const rutinas = await getMisRutinas();
@@ -52,7 +53,7 @@ export default async function RutinasPage() {
       href={`/dashboard/rutinas/${r.slug}/edit`}
       className="absolute top-6 right-6 w-10 h-10 rounded-full bg-orange-500/10 border border-orange-500/20 flex items-center justify-center text-orange-500 z-10 active:scale-90 transition-all shadow-[0_0_15px_rgba(249,115,22,0.1)]"
     >
-      <FiLayers size={18} className="rotate-45" /> {/* O usa un icono de lápiz */}
+      <FaPencil size={18}  /> {/* O usa un icono de lápiz */}
     </Link>
   </div>
 ))}
