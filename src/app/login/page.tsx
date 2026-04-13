@@ -82,14 +82,11 @@ export default function AuthForm() {
 
   return (
     <div className="flex flex-col items-center min-h-screen bg-[#050505] relative overflow-hidden font-sans">
-      {/* Background Decor */}
       <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-green-500/10 blur-[150px] rounded-full animate-pulse" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-orange-500/10 blur-[150px] rounded-full animate-pulse" />
       <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 pointer-events-none" />
-
       <div className="relative w-full max-w-full md:max-w-2xl min-h-screen flex flex-col justify-center">
         <div className="relative w-full p-6 sm:p-10 bg-black/80 backdrop-blur-xl border-x border-white/10 shadow-2xl space-y-8 flex-1 flex flex-col justify-center">
-          
           <header className="flex flex-col items-center mb-10 text-center">
             <div className="relative mb-6">
               <div className="absolute -inset-3 bg-green-400/20 blur-xl rounded-full animate-pulse" />
@@ -98,17 +95,15 @@ export default function AuthForm() {
               </div>
             </div>
             <div className="space-y-2">
-              <h2 className="text-3xl font-black tracking-tight text-orange-300 uppercase leading-none">Acceso</h2>
+              <h2 className="text-3xl font-black tracking-tight text-orange-300 uppercase leading-none">Bienvenidx</h2>
               <p className="text-[9px] text-orange-400 font-black uppercase tracking-[0.9em] pl-[0.5em]">METRICA</p>
             </div>
           </header>
-
           {message && (
             <div className={`p-4 mb-6 rounded-2xl border ${message.includes("⚠️") || message.includes("❌") ? "bg-red-500/10 border-red-500/20 text-red-400" : "bg-green-500/10 border-green-500/20 text-green-400"} text-[10px] font-black uppercase tracking-wider text-center animate-in fade-in slide-in-from-top-2`}>
               {message}
             </div>
           )}
-
           <div className="space-y-4">
             <div className="group relative">
               <FiMail className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-600 group-focus-within:text-green-400 transition-colors" />
@@ -118,7 +113,6 @@ export default function AuthForm() {
                 onChange={(e) => { setEmail(e.target.value); setUserNotFound(false); }}
               />
             </div>
-
             <div className="group relative">
               <FiLock className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-600 group-focus-within:text-green-400 transition-colors" />
               <input
@@ -127,9 +121,7 @@ export default function AuthForm() {
                 onChange={(e) => { setPassword(e.target.value); setUserNotFound(false); }}
               />
             </div>
-
             <div className="pt-4 space-y-4">
-              {/* BOTÓN DINÁMICO: Login o Registro */}
               {!userNotFound ? (
                 <button
                   onClick={handlePasswordAuth}
@@ -159,8 +151,6 @@ export default function AuthForm() {
                   </span>
                 </button>
               )}
-
-              {/* Botón Secundario: Magic Link */}
               <button
                 onClick={handleMagicLink}
                 disabled={loading}
@@ -171,7 +161,6 @@ export default function AuthForm() {
               </button>
             </div>
           </div>
-
           <footer className="pt-10 text-center">
             <p className="text-[8px] text-zinc-700 font-black uppercase tracking-[0.5em]">
               Métrica Performance • 2026
