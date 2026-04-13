@@ -4,6 +4,7 @@ import {
   getHistorial,
   saveSerie,
   getInfoEjercicio,
+  getRutinaBySlug,
 } from "@/actions/entrenamientos";
 import { SerieEntrenamiento } from "@/types";
 import StatCircle from "@/components/StatCircle";
@@ -13,15 +14,20 @@ import { useRouter } from "next/navigation";
 import { supabase } from "@/config/supabase";
 import ExerciseImage from "@/components/ExerciseImage";
 import RestTimer from "@/components/RestTimer";
-import { FiInfo, FiChevronLeft, FiBarChart2} from "react-icons/fi";
+import { FiInfo, FiChevronLeft, FiBarChart2 } from "react-icons/fi";
 import { use } from "react";
-
+import { useSearchParams } from "next/navigation";
 
 export default function GymApp({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }) {
+  const searchParams = useSearchParams();
+  const mode = searchParams.get("mode");
+  const rutinaId = searchParams.get("rutinaId");
+  const sessionIdx = parseInt(searchParams.get("sessionIndex") || "0");
+  const exIdx = parseInt(searchParams.get("exIndex") || "0");
   const { slug } = use(params); // Extraemos el nombre (ej: "crunch-abdominal")
   const [historial, setHistorial] = useState<SerieEntrenamiento[]>([]);
   const [timerKey, setTimerKey] = useState<number>(0);
@@ -34,6 +40,57 @@ export default function GymApp({
 
   // Este estado cambiará cada vez que guardes una serie exitosamente
   const [lastSerieTrigger, setLastSerieTrigger] = useState(0);
+
+  const saltarAlSiguiente = async () => {
+    const rutinaData = await getRutinaBySlug(rutinaId as string);
+    if (!rutinaData || !rutinaData.configuracion) return;
+
+    const sesiones = rutinaData.configuracion;
+    const ejerciciosSesionActual = sesiones[sessionIdx]?.ejercicios || [];
+
+    // 1. ¿Hay más ejercicios en la sesión ACTUAL?
+    if (exIdx + 1 < ejerciciosSesionActual.length) {
+      const siguienteSlug = ejerciciosSesionActual[exIdx + 1].slug;
+      router.push(
+        `/ejercicio/${siguienteSlug}?mode=routine&rutinaId=${rutinaId}&sessionIndex=${sessionIdx}&exIndex=${
+          exIdx + 1
+        }`
+      );
+    }
+    // 2. ¿Hay una SIGUIENTE SESIÓN con ejercicios?
+    else {
+      let nextSessIdx = sessionIdx + 1;
+      let encontroSesionValida = false;
+
+      // Buscamos la próxima sesión que no esté vacía
+      while (nextSessIdx < sesiones.length) {
+        if (
+          sesiones[nextSessIdx].ejercicios &&
+          sesiones[nextSessIdx].ejercicios.length > 0
+        ) {
+          encontroSesionValida = true;
+          break;
+        }
+        nextSessIdx++;
+      }
+
+      if (encontroSesionValida) {
+        const siguienteSesion = sesiones[nextSessIdx];
+        const primerEjSiguienteSesion = siguienteSesion.ejercicios[0].slug;
+
+        alert(`¡Sesión completada! Iniciando: ${siguienteSesion.nombreSesion}`);
+
+        router.push(
+          `/ejercicio/${primerEjSiguienteSesion}?mode=routine&rutinaId=${rutinaId}&sessionIndex=${nextSessIdx}&exIndex=0`
+        );
+      }
+      // 3. No hay más ejercicios ni sesiones con contenido
+      else {
+        alert("¡Felicidades! Has completado la rutina completa.");
+        router.push("/");
+      }
+    }
+  };
 
   const ajustarReps = () => {
     // Ciclo de 5 a 20 reps (por ejemplo)
@@ -81,18 +138,39 @@ export default function GymApp({
     checkUser();
   }, [router]);
 
+  useEffect(() => {
+    const cargarObjetivosRutina = async () => {
+      if (mode === "routine" && rutinaId) {
+        try {
+          const rutinaData = await getRutinaBySlug(rutinaId);
+          const ejercicioConfig =
+            rutinaData?.configuracion?.[sessionIdx]?.ejercicios?.[exIdx];
+
+          if (ejercicioConfig) {
+            if (ejercicioConfig.series_objetivo)
+              setTargetSets(ejercicioConfig.series_objetivo);
+            if (ejercicioConfig.reps_objetivo)
+              setTargetReps(ejercicioConfig.reps_objetivo);
+          }
+        } catch (err) {
+          console.error("Error cargando objetivos de rutina:", err);
+        }
+      }
+    };
+    cargarObjetivosRutina();
+  }, [mode, rutinaId, sessionIdx, exIdx]);
+
   const manejarNuevaSerie = async (
     datosDesdeElFormulario: Partial<SerieEntrenamiento>
   ) => {
     try {
-      await saveSerie({
-        ...datosDesdeElFormulario,
-        nombre_ejercicio: slug,
-        descanso_segundos: descansoConfig, // <--- Aquí se une la magia
-      });
-
+      await saveSerie({ ...datosDesdeElFormulario, nombre_ejercicio: slug });
       await cargarDatos();
-      setLastSerieTrigger((prev) => prev + 1); // <--- Aquí arranca el timer
+      setLastSerieTrigger((prev) => prev + 1);
+      // OPCIONAL: Salto automático al completar la última serie
+      // if (mode === "routine" && historial.length + 1 >= targetSets) {
+      //   setTimeout(() => saltarAlSiguiente(), 2000); // Espera 2 segundos para que vean el check
+      // }
     } catch (e) {
       alert("Error al guardar");
     }
@@ -102,6 +180,7 @@ export default function GymApp({
       setTargetReps(historial[0].reps);
     }
   }, [historial]);
+
   const ultimaSerie = historial[0]; // El historial suele venir ordenado por fecha desc
   const repsObjetivo = ultimaSerie?.reps || 0;
   const pesoAnterior = ultimaSerie?.peso || 0;
@@ -132,61 +211,56 @@ export default function GymApp({
             {info.nombre}
           </h1>
         </div>
-
-
       </div>
-    {/* 2. Imagen del Ejercicio + Botonera Vertical */}
-<div className="flex gap-4 items-stretch">
-  
-  {/* Columna de la Imagen (Ocupa el espacio restante) */}
-  <div className="flex-1">
-    <ExerciseImage path={info.imagen_url} alt={info.nombre} />
-  </div>
+      {/* 2. Imagen del Ejercicio + Botonera Vertical */}
+      <div className="flex gap-4 items-stretch">
+        {/* Columna de la Imagen (Ocupa el espacio restante) */}
+        <div className="flex-1">
+          <ExerciseImage path={info.imagen_url} alt={info.nombre} />
+        </div>
 
-  {/* Columna de Botones (Vertical y centrada) */}
-  <div className="flex flex-col justify-center py-2 gap-2">
-    
-    {/* Botón Perfil/Avatar */}
-    <div
-      onClick={() => router.push("/dashboard")}
-      className="w-12 h-12 rounded-2xl bg-zinc-900 border border-white/10 p-1 cursor-pointer active:scale-90 transition-all overflow-hidden flex-shrink-0 flex items-center justify-center shadow-lg"
-    >
-      {user?.user_metadata?.avatar_url ? (
-        <img
-          src={user.user_metadata.avatar_url}
-          alt="Perfil"
-          className="w-full h-full rounded-xl object-cover"
-        />
-      ) : (
-        <span className="text-xs font-black text-zinc-500 uppercase">
-          {user?.email?.[0]}
-        </span>
-      )}
-    </div>
+        {/* Columna de Botones (Vertical y centrada) */}
+        <div className="flex flex-col justify-center py-2 gap-2">
+          {/* Botón Perfil/Avatar */}
+          <div
+            onClick={() => router.push("/dashboard")}
+            className="w-12 h-12 rounded-2xl bg-zinc-900 border border-white/10 p-1 cursor-pointer active:scale-90 transition-all overflow-hidden flex-shrink-0 flex items-center justify-center shadow-lg"
+          >
+            {user?.user_metadata?.avatar_url ? (
+              <img
+                src={user.user_metadata.avatar_url}
+                alt="Perfil"
+                className="w-full h-full rounded-xl object-cover"
+              />
+            ) : (
+              <span className="text-xs font-black text-zinc-500 uppercase">
+                {user?.email?.[0]}
+              </span>
+            )}
+          </div>
 
-    {/* Botón Gráficas (Stats) */}
-    <button
-      onClick={() => router.push(`/dashboard/stats/${slug}`)}
-      className="w-12 h-12 text-yellow-500 rounded-2xl bg-yellow-500/10 border border-yellow-500/20 active:scale-90  gap-4 transition-transform flex items-center justify-center shadow-lg"
-    >
-      <FiBarChart2 size={20} />
-    </button>
+          {/* Botón Gráficas (Stats) */}
+          <button
+            onClick={() => router.push(`/dashboard/stats/${slug}`)}
+            className="w-12 h-12 text-yellow-500 rounded-2xl bg-yellow-500/10 border border-yellow-500/20 active:scale-90  gap-4 transition-transform flex items-center justify-center shadow-lg"
+          >
+            <FiBarChart2 size={20} />
+          </button>
 
-    {/* Botón Info (Popup) */}
-    <button
-      onClick={() => setShowPopup(true)}
-      className="w-12 h-12 text-green-500 rounded-2xl bg-green-500/10 border border-green-500/20 active:scale-90 transition-transform flex items-center justify-center shadow-lg"
-    >
-      <FiInfo size={20} />
-    </button>
-  </div>
-</div>
+          {/* Botón Info (Popup) */}
+          <button
+            onClick={() => setShowPopup(true)}
+            className="w-12 h-12 text-green-500 rounded-2xl bg-green-500/10 border border-green-500/20 active:scale-90 transition-transform flex items-center justify-center shadow-lg"
+          >
+            <FiInfo size={20} />
+          </button>
+        </div>
+      </div>
       {/* 3. Indicadores (Reps, Timer, Sets) */}
       <div className="flex justify-around items-center mt-12 mb-12 px-2">
         <StatCircle
           value={targetReps}
           label="Reps"
-          // NARANJA si aún no hemos alcanzado el objetivo de reps en la última serie
           activeColor={ultimaSerie?.reps < targetReps ? "orange" : "green"}
           active={ultimaSerie?.reps > 0} // Se enciende si hay al menos una serie
           onClick={ajustarReps}
@@ -200,37 +274,46 @@ export default function GymApp({
         <StatCircle
           value={`${historial.length}/${targetSets}`}
           label="Series"
-          // NARANJA mientras estamos en proceso, VERDE al terminar todas
           activeColor={historial.length < targetSets ? "orange" : "green"}
           active={historial.length > 0}
           onClick={ajustarSets}
         />
       </div>
-      {/* 4. Referencia de peso anterior */}
       <div className="text-center mb-8">
         <p className="text-zinc-500 text-[10px] uppercase tracking-[0.2em] border-b border-white/5 pb-3 inline-block px-6">
           Último peso:{" "}
           <span className="text-white font-black ml-1">{pesoAnterior} kg</span>
         </p>
       </div>
-      {/* 5. Formulario y Comentarios */}
-      {/* 5. Formulario con el nuevo botón ancho */}
       <div className="space-y-6 mb-12">
         <LogForm
           onAddSerie={manejarNuevaSerie}
           defaultReps={targetReps}
           ultimoPeso={pesoAnterior}
-          // Ya no pasamos el botón "+" aquí dentro
         />
       </div>
-      {/* 6. Historial de hoy */}
+      {mode === "routine" && (
+        <div className="mb-12 animate-in fade-in zoom-in duration-500">
+          <button
+            onClick={saltarAlSiguiente}
+            className={`w-full py-4 font-black uppercase rounded-2xl shadow-lg transition-all active:scale-95 ${
+              historial.length >= targetSets
+                ? "bg-green-500 text-black shadow-green-500/20" // Resalta cuando terminas
+                : "bg-zinc-800 text-zinc-400 border border-white/5" // Discreto mientras entrenas
+            }`}
+          >
+            {historial.length >= targetSets
+              ? "Siguiente Ejercicio →"
+              : "Saltar Ejercicio"}
+          </button>
+        </div>
+      )}
       <div className="mt-4">
         <h2 className="text-zinc-600 text-[10px] font-black uppercase mb-6 tracking-[0.2em]">
           Sesión actual
         </h2>
         <HistoryList series={historial} onDelete={cargarDatos} />
       </div>
-      {/* 7. POPUP DE TÉCNICA (Formato Profesional) */}
       {showPopup && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-xl animate-in fade-in duration-300">
           <div className="w-full max-w-lg bg-zinc-950 border border-white/10 rounded-[2.5rem] max-h-[85vh] overflow-y-auto p-8 shadow-2xl relative">
@@ -247,7 +330,6 @@ export default function GymApp({
             <div className="mb-10">
               <ExerciseImage path={info.imagen_url} alt={info.nombre} />
             </div>
-            {/* SECCIÓN INSTRUCCIONES */}
             <section className="mb-10">
               <h3 className="text-green-500 text-[10px] font-black uppercase tracking-[0.2em] mb-5">
                 Instrucciones
@@ -268,7 +350,6 @@ export default function GymApp({
                 ))}
               </div>
             </section>
-            {/* SECCIÓN AVISO */}
             <section className="p-6 bg-red-500/5 border border-red-500/10 rounded-[2rem]">
               <div className="flex items-center gap-2 mb-4">
                 <span className="text-red-500 text-lg">⚠️</span>

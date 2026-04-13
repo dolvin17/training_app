@@ -92,8 +92,12 @@ export interface ProtocoloProps {
 export interface EjercicioSeleccionado {
   id: string;
   nombre: string;
+  slug: string;
   grupo_muscular: string;
   imagen_url: string;
+  series_objetivo?: number;
+  reps_objetivo?: number;
+  peso_objetivo?: number;
 }
 
 export interface DiaEntrenamiento {

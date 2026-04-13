@@ -269,12 +269,9 @@ export async function updateNutritionSettings(settings: Omit<UserNutritionGoals,
 
 export async function saveRutina(rutina: any) {
   const supabase = await createClient();
-  
-  // 1. Obtener el ID del usuario actual
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error("Debes estar logueado");
 
-// --- NUEVA LÓGICA DE SANEAMIENTO ---
   const slugLimpio = rutina.slug
     .toLowerCase()
     .normalize("NFD")
@@ -296,6 +293,7 @@ export async function saveRutina(rutina: any) {
 
   if (error) throw new Error(error.message);
   revalidatePath("/dashboard/rutinas");
+  revalidatePath("/");
 }
 
 export async function getRutinaActual() {
@@ -383,3 +381,18 @@ export async function getAllRutinasFull() {
   return data || [];
 }
 
+export async function getEjerciciosHechosHoy() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return [];
+
+  const hoy = new Date().toISOString().split('T')[0];
+
+  const { data } = await supabase
+    .from("entrenamientos")
+    .select("nombre_ejercicio")
+    .eq("user_id", user.id)
+    .gte("fecha", `${hoy}T00:00:00`);
+
+  return Array.from(new Set(data?.map(d => d.nombre_ejercicio) || []));
+}

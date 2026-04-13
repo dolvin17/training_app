@@ -2,7 +2,10 @@
 import Link from "next/link";
 import { FiChevronRight, FiActivity, FiBarChart2 } from "react-icons/fi";
 import { useState, useEffect } from "react";
-import { getAllEjercicios } from "@/actions/entrenamientos";
+import {
+  getAllEjercicios,
+  getEjerciciosHechosHoy,
+} from "@/actions/entrenamientos";
 import { supabase } from "@/config/supabase";
 import SearchBar from "@/components/SearchBar";
 import ProtocoloEndocrino from "@/components/ProtocoloEndocrino";
@@ -21,6 +24,7 @@ export default function MenuPrincipal() {
   const [loading, setLoading] = useState(true);
   const [userName, setUserName] = useState("");
   const [rutinas, setRutinas] = useState<any[]>([]);
+  const [hechosHoy, setHechosHoy] = useState<string[]>([]);
   const categorias = [
     "Todos",
     "Pecho",
@@ -66,16 +70,19 @@ export default function MenuPrincipal() {
 
       // 2. CARGA EN PARALELO: Ejecutamos las 3 consultas a la vez
       try {
-        const [dataEjercicios, dataNutricion, dataRutinas] = await Promise.all([
-          getAllEjercicios(),
-          getNutritionDashboard(),
-          getAllRutinasFull(), // <-- Esto es lo que faltaba cargar eficientemente
-        ]);
+        const [dataEjercicios, dataNutricion, dataRutinas, dataHechos] =
+          await Promise.all([
+            getAllEjercicios(),
+            getNutritionDashboard(),
+            getAllRutinasFull(),
+            getEjerciciosHechosHoy(), // <-- Esto es lo que faltaba cargar eficientemente
+          ]);
 
         setTodosLosEjercicios(dataEjercicios);
         setEjerciciosFiltrados(dataEjercicios);
         setNutriData(dataNutricion);
         setRutinas(dataRutinas); // <-- Guardamos las rutinas en el estado
+        setHechosHoy(dataHechos); // <--- GUARDAMOS LOS HECHOS
       } catch (error) {
         console.error("Error cargando datos del Dashboard:", error);
       } finally {
@@ -142,7 +149,9 @@ export default function MenuPrincipal() {
       )}
 
       {/* AGREGAR ESTO AQUÍ: */}
-      {rutinas.length > 0 && <RutinasModule rutinas={rutinas} />}
+      {rutinas.length > 0 && (
+        <RutinasModule rutinas={rutinas} ejerciciosCompletadosHoy={hechosHoy} />
+      )}
       <Link
         href="/dashboard"
         className="group relative mb-14 block active:scale-[0.98] transition-all"
