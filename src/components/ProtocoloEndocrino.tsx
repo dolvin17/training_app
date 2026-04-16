@@ -8,7 +8,7 @@ import { TbMeat } from "react-icons/tb";
 import { FaGlassWaterDroplet } from "react-icons/fa6";
 import { ProtocoloProps } from "@/types";
 import { FiChevronDown, FiChevronUp } from "react-icons/fi";
-
+import PerformanceChart from "@/components/PerformanceChart";
 export default function ProtocoloEndocrino({
   goals,
   proteinHistory,
@@ -23,7 +23,7 @@ export default function ProtocoloEndocrino({
 
   return (
     <section className="mb-16 animate-in fade-in slide-in-from-bottom-4 duration-1000">
-      <div 
+      <div
         onClick={() => setIsOpen(!isOpen)}
         className="group cursor-pointer bg-gradient-to-r from-orange-600/20 via-black to-black border border-white/5 rounded-3xl p-5 mb-6 hover:from-orange-600/30 transition-all duration-500 shadow-lg shadow-orange-950/10"
       >
@@ -32,20 +32,26 @@ export default function ProtocoloEndocrino({
             <h2 className="text-[10px] font-black uppercase tracking-[0.4em] text-orange-500">
               GESTIÓN DE RENDIMIENTO
             </h2>
-            
+
             {!isOpen && (
               <div className="flex items-center gap-6 animate-in fade-in slide-in-from-left-4">
                 <div className="flex items-center gap-2 border-l border-white/10 pl-4">
                   <TbMeat className="text-red-500" size={14} />
-                  <span className="text-[11px] font-black text-white">{currentProtein}G</span>
+                  <span className="text-[11px] font-black text-white">
+                    {currentProtein}G
+                  </span>
                 </div>
                 <div className="flex items-center gap-2 border-l border-white/10 pl-4">
                   <IoFootstepsSharp className="text-orange-500" size={14} />
-                  <span className="text-[11px] font-black text-white">{stepsToday.toLocaleString()}</span>
+                  <span className="text-[11px] font-black text-white">
+                    {stepsToday.toLocaleString()}
+                  </span>
                 </div>
                 <div className="flex items-center gap-2 border-l border-white/10 pl-4">
                   <FaGlassWaterDroplet className="text-cyan-500" size={14} />
-                  <span className="text-[11px] font-black text-white">{(waterTotal / 1000).toFixed(1)}L</span>
+                  <span className="text-[11px] font-black text-white">
+                    {(waterTotal / 1000).toFixed(1)}L
+                  </span>
                 </div>
               </div>
             )}
@@ -77,7 +83,15 @@ export default function ProtocoloEndocrino({
             <div className="flex flex-col h-full">
               <WaterModule goal={goals.water_goal_l} currentMl={waterTotal} />
             </div>
+           
           </div>
+           <div className="w-full animate-in fade-in slide-in-from-top-4 duration-700">
+              <PerformanceChart
+                proteinHistory={proteinHistory}
+                stepsHistory={[8000, 12000, 9500, 11000, 7000, 13000, 10000]} // Mock temporal
+                waterHistory={[2500, 3000, 2800, 3500, 2000, 3200, 3000]} // Mock temporal
+              />
+            </div>
         </div>
       )}
     </section>
