@@ -86,6 +86,9 @@ export interface ProtocoloProps {
   proteinHistory: number[];
   stepsToday: number;
   waterTotal: number;
+  proteinFullHistory?: number[];
+  stepsHistory?: number[];
+  waterHistory?: number[];
 }
 
 

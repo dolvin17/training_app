@@ -14,6 +14,9 @@ export default function ProtocoloEndocrino({
   proteinHistory,
   stepsToday,
   waterTotal,
+  proteinFullHistory = [], // Valores por defecto para evitar errores
+  stepsHistory = [],
+  waterHistory = [],
 }: ProtocoloProps) {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -83,15 +86,15 @@ export default function ProtocoloEndocrino({
             <div className="flex flex-col h-full">
               <WaterModule goal={goals.water_goal_l} currentMl={waterTotal} />
             </div>
-           
           </div>
-           <div className="w-full animate-in fade-in slide-in-from-top-4 duration-700">
-              <PerformanceChart
-                proteinHistory={proteinHistory}
-                stepsHistory={[8000, 12000, 9500, 11000, 7000, 13000, 10000]} // Mock temporal
-                waterHistory={[2500, 3000, 2800, 3500, 2000, 3200, 3000]} // Mock temporal
-              />
-            </div>
+          {/* Dentro del contenido desplegable */}
+          <div className="w-full animate-in fade-in slide-in-from-top-4 duration-700">
+            <PerformanceChart
+              proteinHistory={proteinFullHistory} // El historial de 30 días
+              stepsHistory={stepsHistory}
+              waterHistory={waterHistory}
+            />
+          </div>
         </div>
       )}
     </section>

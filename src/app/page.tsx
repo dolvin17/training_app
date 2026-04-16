@@ -38,13 +38,18 @@ export default function MenuPrincipal() {
     "Otro",
   ];
 
-  const [nutriData, setNutriData] = useState<{
-    goals: UserNutritionGoals;
-    proteinHistory: number[];
-    waterTotal: number;
-    stepsToday: number;
-  } | null>(null);
-
+// Busca esto y actualízalo:
+const [nutriData, setNutriData] = useState<{
+  goals: UserNutritionGoals;
+  proteinHistory: number[];
+  waterTotal: number;
+  stepsToday: number;
+  fullHistory: {      // <--- AÑADE ESTO
+    protein: number[];
+    steps: number[];
+    water: number[];
+  };
+} | null>(null);
   // Función para normalizar texto (quitar tildes y tontadas)
   const cleanText = (str: string) =>
     str
@@ -139,14 +144,18 @@ export default function MenuPrincipal() {
           </p>
         </div>
       </header>
-      {nutriData && (
-        <ProtocoloEndocrino
-          goals={nutriData.goals}
-          proteinHistory={nutriData.proteinHistory}
-          stepsToday={nutriData.stepsToday}
-          waterTotal={nutriData.waterTotal}
-        />
-      )}
+   {nutriData && (
+  <ProtocoloEndocrino
+    goals={nutriData.goals}
+    proteinHistory={nutriData.proteinHistory} // Este se usa para el círculo de hoy
+    stepsToday={nutriData.stepsToday}
+    waterTotal={nutriData.waterTotal}
+    // PASAMOS LOS HISTÓRICOS PARA LA GRÁFICA:
+    proteinFullHistory={nutriData.fullHistory.protein} 
+    stepsHistory={nutriData.fullHistory.steps}
+    waterHistory={nutriData.fullHistory.water}
+  />
+)}
 
       {/* AGREGAR ESTO AQUÍ: */}
       {rutinas.length > 0 && (

@@ -34,18 +34,19 @@ export default function PerformanceChart({
 
   const currentConfig = config[metric];
 
-  // 1. Lógica para procesar datos y etiquetas del Eje X
   const chartData = useMemo(() => {
+    // 1. Seleccionamos el array que viene de props
     const rawData = metric === "protein" ? proteinHistory : metric === "steps" ? stepsHistory : waterHistory;
     
-    // Limitamos la cantidad de puntos según el rango para que no se vea amontonado
-    const points = range === "week" ? 7 : range === "month" ? 30 : 12;
-    const dataSlice = rawData.slice(-points);
+    // 2. Definimos cuántos puntos mostrar según el rango elegido
+    const limit = range === "week" ? 7 : range === "month" ? 30 : 12;
+    const dataSlice = rawData.slice(-limit);
 
+    // 3. Generamos las etiquetas del Eje X de forma inteligente
     return dataSlice.map((val: number, i: number) => {
-      let label = "";
       const date = new Date();
-      
+      let label = "";
+
       if (range === "week") {
         date.setDate(date.getDate() - (dataSlice.length - 1 - i));
         label = date.toLocaleDateString('es-ES', { weekday: 'short' }).toUpperCase();
@@ -60,13 +61,13 @@ export default function PerformanceChart({
       return {
         displayDate: label,
         value: val,
-        fullDate: date.toLocaleDateString(), // Para el tooltip
+        fullDate: date.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' }),
       };
     });
   }, [metric, range, proteinHistory, stepsHistory, waterHistory]);
 
   return (
-    <section className="bg-black border border-white/10 p-6 rounded-[2.5rem] shadow-xs shadow-orange-100/10">
+    <section className="bg-black border border-white/10 p-6 rounded-[2.5rem] shadow-lg shadow-orange-500/5">
       <div className="flex flex-col gap-6 mb-8">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -78,7 +79,6 @@ export default function PerformanceChart({
             </h2>
           </div>
           
-          {/* BOTONES TEMPORALES (Ahora funcionales) */}
           <div className="flex bg-zinc-900/50 p-1 rounded-xl border border-white/5">
             {(["week", "month", "year"] as TimeRange[]).map((r) => (
               <button
@@ -94,7 +94,6 @@ export default function PerformanceChart({
           </div>
         </div>
 
-        {/* SELECTOR DE MÉTRICA */}
         <div className="grid grid-cols-3 gap-3">
           {(["protein", "steps", "water"] as MetricType[]).map((m) => (
             <button
@@ -115,7 +114,6 @@ export default function PerformanceChart({
         </div>
       </div>
 
-      {/* GRÁFICA CORREGIDA */}
       <div className="h-[250px] w-full pr-4">
         <ResponsiveContainer>
           <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
@@ -176,18 +174,17 @@ export default function PerformanceChart({
         </ResponsiveContainer>
       </div>
 
-      {/* FOOTER INTERPRETACIÓN */}
       <div className="mt-10 pt-6 border-t border-white/5 flex gap-4">
         <div className="w-10 h-10 rounded-2xl bg-white/5 flex items-center justify-center shrink-0">
           <FiTarget className="text-orange-500" size={18} />
         </div>
         <div>
-          <h4 className="text-[10px] font-black uppercase text-white mb-1">Interpretación de {currentConfig.label}</h4>
+          <h4 className="text-[10px] font-black uppercase text-white mb-1 tracking-widest">Interpretación</h4>
           <p className="text-[11px] text-zinc-500 leading-relaxed">
-            {range === "week" ? "Vista semanal" : range === "month" ? "Vista mensual" : "Histórico anual"}. 
-            {metric === "water" && " Una buena hidratación optimiza el volumen celular y la recuperación muscular."}
-            {metric === "protein" && " Consumir proteína asegura un balance de nitrógeno positivo para el crecimiento."}
-            {metric === "steps" && " Los pasos son tu termostato calórico. No dejes que la media baje de tu objetivo."}
+            Consistencia {range === "week" ? "semanal" : range === "month" ? "mensual" : "anual"} en {currentConfig.label}. 
+            {metric === "water" && " Mantén la curva estable para evitar la fatiga central."}
+            {metric === "protein" && " La proteína es el pilar de tu recuperación estructural."}
+            {metric === "steps" && " Tu NEAT diario es el motor de tu flexibilidad metabólica."}
           </p>
         </div>
       </div>
