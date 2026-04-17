@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import { playTimerBeep } from "@/hooks/audio";
 
 export default function RestTimer({ 
   secondsConfig, 
@@ -30,6 +31,20 @@ export default function RestTimer({
     return () => clearInterval(interval);
   }, [isActive, seconds]);
 
+useEffect(() => {
+  let interval: NodeJS.Timeout;
+
+  if (isActive && seconds > 0) {
+    interval = setInterval(() => {
+      setSeconds((s) => s - 1);
+    }, 1000);
+  } else if (seconds === 0 && isActive) {
+    playTimerBeep();
+    setIsActive(false);
+  }
+
+  return () => clearInterval(interval);
+}, [isActive, seconds]);
   // Función para ajustar tiempo (ciclo de 30s a 5min)
   const ajustarTiempo = (e: React.MouseEvent | React.TouchEvent) => {
     e.stopPropagation();

@@ -5,6 +5,7 @@ import {
   saveSerie,
   getInfoEjercicio,
   getRutinaBySlug,
+  getDashboardData
 } from "@/actions/entrenamientos";
 import { SerieEntrenamiento } from "@/types";
 import LogForm from "@/components/LogForm";
@@ -13,7 +14,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "@/config/supabase";
 import ExerciseImage from "@/components/ExerciseImage";
 import { FiInfo, FiChevronLeft, FiBarChart2 } from "react-icons/fi";
-import WorkoutStates from "@/components/WorkoutStates"; // Asegúrate que el archivo se llame WorkoutStates.tsx
+import WorkoutStates from "@/components/WorkoutStates"; 
+import StreakPopup from "@/components/StreakPopup";
 
 export default function GymApp({
   params,
@@ -36,6 +38,8 @@ export default function GymApp({
   const [lastSerieTrigger, setLastSerieTrigger] = useState(0);
   const [user, setUser] = useState<any>(null);
   const router = useRouter();
+  const [showStreak, setShowStreak] = useState(false);
+const [rachaFinal, setRachaFinal] = useState(0);
 
   // 1. Cargar biblioteca del ejercicio
   useEffect(() => {
@@ -126,8 +130,9 @@ export default function GymApp({
         alert(`¡Sesión completada! Iniciando: ${sesiones[nextSessIdx].nombreSesion}`);
         router.push(`/ejercicio/${sesiones[nextSessIdx].ejercicios[0].slug}?mode=routine&rutinaId=${rutinaId}&sessionIndex=${nextSessIdx}&exIndex=0`);
       } else {
-        alert("¡Felicidades! Has completado la rutina completa.");
-        router.push("/");
+       const { racha } = await getDashboardData() || { racha: 0 };
+        setRachaFinal(racha);
+        setShowStreak(true);
       }
     }
   };
@@ -271,6 +276,12 @@ export default function GymApp({
             </button>
           </div>
         </div>
+      )}
+      {showStreak && (
+        <StreakPopup 
+          racha={rachaFinal} 
+          onClose={() => router.push("/")} 
+        />
       )}
     </div>
   );
